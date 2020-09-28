@@ -1,0 +1,34 @@
+{
+  "name": "http-api-assignment-ii",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "12.18.3",
+    "npm": "6.14.8"
+  },
+  "dependencies": {
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  },
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\"",
+    "nodemon": "nodemon --watch ./src ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajs2877/http-api-assignment-ii.git"
+  },
+  "author": "Alex Sarnese",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajs2877/http-api-assignment-ii/issues"
+  },
+  "homepage": "https://github.com/ajs2877/http-api-assignment-ii#readme"
+}
