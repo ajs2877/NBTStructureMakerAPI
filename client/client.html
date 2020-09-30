@@ -7,27 +7,39 @@
 </head>
 <body>
   <section id="top">
-    <h3>POST Status Code Tests</h3>
-    <form id="nameForm" action="/addUser" method="post">
-      <label for="name">Name: </label>
-      <input id="nameField" type="text" name="name" required />
-      <label for="age">Age: </label>
-      <input id="ageField" type="number" name="age" min="0" max="100" step="1" required/>
-      <input type="submit" value="Add User"/>
-    </form>
-    <form id="userForm" action="/getUsers" method="get">
-      <select id='urlField' required>
-        <option value='/getUsers'>/getUsers</option>
-        <option value='/notReal'>/notReal</option>
-      </select>
-      <select id="methodSelect" required>
-        <option value="get">GET</option>
-        <option value="head">HEAD</option>
-      </select>
-      <input type="submit" value="Get User" />
-    </form>
+    <div class="layerControls">
+      <button id="downbutton">Down</button>
+      Layer <span id="currentLayer">1</span>/<span id="totalLayers">9</span>
+      <button id="upbutton">Up</button>
+    </div>
+    <button id="saveButton">Save NBT</button>
   </section>
-  <section id="content">
+  <section id="blockSelector">
+    <div class="button">
+      <input type="radio" name="blockRadio" value="minecraft:dirt"/>
+      <label for="dirt">Dirt</label>
+
+      <input type="radio" name="blockRadio" value="minecraft:stone"/>
+      <label for="stone">Stone</label>
+      
+      <input type="radio" name="blockRadio" value="minecraft:oak_planks"/>
+      <label for="oak_planks">oak_planks</label>
+      
+      <input type="radio" name="blockRadio" value="minecraft:glass"/>
+      <label for="glass">glass</label>
+      
+      <input type="radio" name="blockRadio" value="minecraft:bricks"/>
+      <label for="bricks">bricks</label>
+      
+      <input type="radio" name="blockRadio" value="minecraft:prismarine"/>
+      <label for="prismarine">prismarine</label>
+      
+      <input type="radio" name="blockRadio" value="minecraft:crying_obsidian"/>
+      <label for="crying_obsidian">crying_obsidian</label>
+      
+      <input type="radio" name="blockRadio" value="minecraft:honeycomb_block" id="honeycomb_block"/>
+      <label for="honeycomb_block">honeycomb_block</label>
+    </div>
   </section>
 </body>
 </html>

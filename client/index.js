@@ -1,5 +1,8 @@
 "use strict";
 import createXHR from './xhr.js';
+import setupGrid from './ui.js';
+
+let size = 9;
 
 const handleResponse = (xhr, parseResponse) => {
   const content = document.querySelector('#content');
@@ -48,23 +51,15 @@ const handleResponse = (xhr, parseResponse) => {
   }
 };
 
-const requestUpdate = (e, userForm) => {
-
-  const url = userForm.querySelector('#urlField').value;
-  const method = userForm.querySelector('#methodSelect').value;
+const requestUpdate = (e) => {
   
   //make a new AJAX request asynchronously
   const xhr = new XMLHttpRequest();
-  xhr.open(method, url);
+  xhr.open("GET","/sdfgh");
   xhr.setRequestHeader('Accept', 'application/json');
 
   //get request or head request
-  if(method == 'get') {
-    xhr.onload = () => handleResponse(xhr, true);
-  } 
-  else {
-    xhr.onload = () => handleResponse(xhr, false);
-  }
+  xhr.onload = () => handleResponse(xhr, true);
   
   xhr.send();
   e.preventDefault();
@@ -80,25 +75,12 @@ const getValueOf = (form, fieldSelector) => {
   return (field) ? field.value : null;
 };
 
-// Get action from form.
-const getAction = (form) => {
-    const fieldAction = getValueOf(form, "#urlField");
-    return (fieldAction) ? fieldAction : form.getAttribute('action');
-}
-
-// Get method from form.
-const getMethod = (form) => {
-    const fieldMethod = getValueOf(form, "#methodSelect");
-    return (fieldMethod) ? fieldMethod : form.getAttribute('method');
-};
-
 // Send post with payload.
-const sendPost = (e, nameForm) => {
+const sendPost = (e) => {
   e.preventDefault();
   
   const payload = {
-      name: getValueOf(nameForm, "#nameField"),
-      age: getValueOf(nameForm, "#ageField")
+      name: "test"
   };
 
   // Format the data
@@ -121,8 +103,8 @@ const sendPost = (e, nameForm) => {
 
   // make xhr and send it
   const info = nameForm ? {
-      action: getAction(nameForm),
-      method: getMethod(nameForm) 
+      action: "POST",
+      method: "/sdfgh" 
     } : null;
     console.log(info);
 
@@ -138,13 +120,14 @@ const sendPost = (e, nameForm) => {
 
 // add reaction to submitting
 const init = () => {
-  const userForm = document.querySelector('#userForm');
-  const getUsers = (e) => requestUpdate(e, userForm);
-  userForm.addEventListener('submit', getUsers);
+  const getUsers = (e) => requestUpdate(e);
+  //userForm.addEventListener('submit', getUsers);
 
-  const nameForm = document.querySelector('#nameForm');
-  const addUser = (e) => sendPost(e, nameForm);
-  nameForm.addEventListener('submit', addUser);
+  // const nameForm = document.querySelector('#nameForm');
+  // const addUser = (e) => sendPost(e, nameForm);
+  // nameForm.addEventListener('submit', addUser);
+
+  setupGrid();
 };
 
 window.onload = init;

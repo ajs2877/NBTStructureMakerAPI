@@ -70,10 +70,11 @@ const handlePost = (request, response) => {
 
 const urlStruct = {
   GET: {
-    '/': htmlHandler.getIndex,
-    '/style.css': htmlHandler.getCSS,
-    '/index.js': htmlHandler.getIndexJavascript,
-    '/xhr.js': htmlHandler.getXHRJavascript,
+    '/': htmlHandler.getPage,
+    '/style.css': htmlHandler.getPage,
+    '/index.js': htmlHandler.getPage,
+    '/xhr.js': htmlHandler.getPage,
+    '/ui.js': htmlHandler.getPage,
     '/getUsers': jsonHandler.getUsers,
     '/updateUser': jsonHandler.updateUser,
     notFound: jsonHandler.notFound,
@@ -93,8 +94,13 @@ const urlStruct = {
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
 
-  if (urlStruct[request.method][parsedUrl.pathname]) {
-    urlStruct[request.method][parsedUrl.pathname](request, response);
+  let resultFunction = urlStruct[request.method][parsedUrl.pathname];
+  if (resultFunction) {
+    if(resultFunction.length === 3){
+      resultFunction(request, response, parsedUrl.pathname);
+    }else{
+      resultFunction(request, response);
+    }
   } else {
     urlStruct[request.method].notFound(request, response);
   }

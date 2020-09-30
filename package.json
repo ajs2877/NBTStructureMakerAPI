@@ -14,13 +14,14 @@
   "devDependencies": {
     "eslint": "^7.9.0",
     "eslint-config-airbnb": "^18.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4"
   },
   "scripts": {
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
     "test": "echo \"Tests complete\"",
-    "nodemon": "nodemon --watch ./src ./src/server.js"
+    "nodemon": "nodemon -e js,html,css --watch ./src --watch ./client ./src/server.js"
   },
   "repository": {
     "type": "git",

@@ -3,6 +3,8 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
+  background-color: black;
+  color: whitesmoke;
 }
 
 #top {
@@ -18,4 +20,47 @@ html, body {
   margin-top: 100px;
   font-size: 2em;
   text-align: center;
+}
+
+.block {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+}
+
+.air {
+  background: #ffffff;
+}
+
+.dirt {
+  background: #61402b;
+}
+
+.stone {
+  background: #757575;
+}
+
+.oak_planks {
+  background: #af845b;
+}
+
+.glass {
+  background: #c0dfe0;
+}
+
+.bricks {
+  background: #924627;
+}
+
+.prismarine {
+  background: #0e6699;
+}
+
+.crying_obsidian {
+  background: #470470;
+}
+
+.honeycomb_block {
+  background: #f59312;
 }

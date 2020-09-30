@@ -8,39 +8,26 @@ const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
 const js = fs.readFileSync(`${__dirname}/../client/index.js`);
 const xhr = fs.readFileSync(`${__dirname}/../client/xhr.js`);
+const ui = fs.readFileSync(`${__dirname}/../client/ui.js`);
+
+
+const fileStruct = {
+  '/': {'type':'text/html', 'page':index},
+  '/style.css': {'type':'text/css', 'page':css},
+  '/index.js': {'type':'text/javascript', 'page':js},
+  '/xhr.js': {'type':'text/javascript', 'page':xhr},
+  '/ui.js': {'type':'text/javascript', 'page':ui}
+};
+
 
 // function to get the index page
-const getIndex = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'text/html' });
-  response.write(index);
-  response.end();
-};
-
-// function to get css page
-const getCSS = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'text/css' });
-  response.write(css);
-  response.end();
-};
-
-// function to get js main
-const getIndexJavascript = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'text/javascript' });
-  response.write(js);
-  response.end();
-};
-
-// function to get js xhr
-const getXHRJavascript = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'text/javascript' });
-  response.write(xhr);
+const getPage = (request, response, file) => {
+  response.writeHead(200, { 'Content-Type': fileStruct[file]['type'] });
+  response.write(fileStruct[file]['page']);
   response.end();
 };
 
 // set out public exports
 module.exports = {
-  getIndex,
-  getCSS,
-  getIndexJavascript,
-  getXHRJavascript,
+  getPage
 };
