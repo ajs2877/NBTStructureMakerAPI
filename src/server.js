@@ -1,11 +1,10 @@
 const http = require('http');
 const url = require('url');
 const query = require('querystring');
+// const fs = require('fs');
+// const nbt = require('nbt');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
-const fs = require('fs');
-const nbt = require('nbt');
-
 
 /*
 example of how to use nbt from https://www.npmjs.com/package/nbt
@@ -94,11 +93,11 @@ const urlStruct = {
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
 
-  let resultFunction = urlStruct[request.method][parsedUrl.pathname];
+  const resultFunction = urlStruct[request.method][parsedUrl.pathname];
   if (resultFunction) {
-    if(resultFunction.length === 3){
+    if (resultFunction.length === 3) {
       resultFunction(request, response, parsedUrl.pathname);
-    }else{
+    } else {
       resultFunction(request, response);
     }
   } else {

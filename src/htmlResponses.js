@@ -10,24 +10,22 @@ const js = fs.readFileSync(`${__dirname}/../client/index.js`);
 const xhr = fs.readFileSync(`${__dirname}/../client/xhr.js`);
 const ui = fs.readFileSync(`${__dirname}/../client/ui.js`);
 
-
 const fileStruct = {
-  '/': {'type':'text/html', 'page':index},
-  '/style.css': {'type':'text/css', 'page':css},
-  '/index.js': {'type':'text/javascript', 'page':js},
-  '/xhr.js': {'type':'text/javascript', 'page':xhr},
-  '/ui.js': {'type':'text/javascript', 'page':ui}
+  '/': { type: 'text/html', page: index },
+  '/style.css': { type: 'text/css', page: css },
+  '/index.js': { type: 'text/javascript', page: js },
+  '/xhr.js': { type: 'text/javascript', page: xhr },
+  '/ui.js': { type: 'text/javascript', page: ui },
 };
-
 
 // function to get the index page
 const getPage = (request, response, file) => {
-  response.writeHead(200, { 'Content-Type': fileStruct[file]['type'] });
-  response.write(fileStruct[file]['page']);
+  response.writeHead(200, { 'Content-Type': fileStruct[file].type });
+  response.write(fileStruct[file].page);
   response.end();
 };
 
 // set out public exports
 module.exports = {
-  getPage
+  getPage,
 };

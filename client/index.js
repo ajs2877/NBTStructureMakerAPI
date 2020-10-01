@@ -3,52 +3,43 @@ import createXHR from './xhr.js';
 import setup from './ui.js';
 
 // Set global as this is needed to be setup by ui
+// Hold info of the structure itself as a 2d array rn. (will be changed to 3d)
 window.structureBlocks = [];
 
 const handleResponse = (xhr, parseResponse) => {
-  const content = document.querySelector('#content');
-  content.style["textAlign"] = "center";
-
   switch(xhr.status) 
   {
       case 200: 
-        content.innerHTML = `<b>Success</b>`;
+        alert(`<b>Success</b>`);
         break;
 
       case 201: 
-        content.innerHTML = '<b>Create</b>';
+        alert('<b>Create</b>');
         break;
 
       case 204: 
-        content.innerHTML = '<b>Updated (No Content)</b>';
+        alert('<b>Updated (No Content)</b>');
         break;
 
       case 400: 
-        content.innerHTML = `<b>Bad Request</b>`;
+        alert( `<b>Bad Request</b>`);
         break;
 
       case 404: 
-        content.innerHTML = `<b>Resource Not Found</b>`;
+        alert(`<b>Resource Not Found</b>`);
         break;
 
       default: 
-        content.innerHTML = `Error code not implemented by client.`;
+        alert(`Error code not implemented by client.`);
         break;
   }
   
   if(parseResponse && xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
     const obj = JSON.parse(xhr.response);
     console.dir(obj);
-    if(obj.message){
-      content.innerHTML += `<p>${obj.message}<p>`;
-    }
-    else{
-      content.innerHTML += `<p><pre>${JSON.stringify(obj, undefined, 2)}<pre><p>`;
-      content.style["textAlign"] = "left";
-    }
   } 
   else { 
-    content.innerHTML += '<p>Meta Data Recieved<p>';
+    alert('<p>Meta Data Recieved<p>');
   }
 };
 
@@ -70,10 +61,8 @@ const requestUpdate = (e) => {
 
 // Send post with payload.
 const sendPost = (e) => {
-  e.preventDefault();
-  
   const payload = {
-      name: "test"
+      structureBlocks: window.structureBlocks
   };
 
   // Format the data
@@ -83,43 +72,27 @@ const sendPost = (e) => {
   Object.keys(payload).forEach((key) => {
     data.push(`${key}=${payload[key]}`);
   });
-  const formData = data.join('&');
-
-  // form cannot be empty
-  if(!formData) { 
-    onError({
-        message: "Form data is empty",
-        form: nameForm
-    });
-    return;
-  }
+  const bodyData = data.join('&');
 
   // make xhr and send it
-  const info = nameForm ? {
+  const info = {
       action: "POST",
-      method: "/sdfgh" 
-    } : null;
-    console.log(info);
+      method: "/savenbt" 
+    };
 
   const xhrObj = createXHR(info, {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json'
   }, handleResponse)
 
-  xhrObj.send(formData);
+  xhrObj.send(bodyData);
 
   return false;
 };
 
 // add reaction to submitting
 const init = () => {
-  const getUsers = (e) => requestUpdate(e);
-  //userForm.addEventListener('submit', getUsers);
-
-  // const nameForm = document.querySelector('#nameForm');
-  // const addUser = (e) => sendPost(e, nameForm);
-  // nameForm.addEventListener('submit', addUser);
-
+  document.querySelector("#saveButton").addEventListener('click', sendPost);
   setup();
 };
 
