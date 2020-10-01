@@ -1,6 +1,6 @@
 "use strict";
 import createXHR from './xhr.js';
-import setupGrid from './ui.js';
+import setup from './ui.js';
 
 // Set global as this is needed to be setup by ui
 window.structureBlocks = [];
@@ -120,7 +120,7 @@ const init = () => {
   // const addUser = (e) => sendPost(e, nameForm);
   // nameForm.addEventListener('submit', addUser);
 
-  setupGrid();
+  setup();
 };
 
 window.onload = init;

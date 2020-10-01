@@ -7,26 +7,31 @@ let currentBlock = "dirt";
   // // source: https://stackoverflow.com/a/57208937
   // let coordinate = this.id.split(',').map(Number);
 
-  //https://stackoverflow.com/a/15098620
+//https://stackoverflow.com/a/15098620
 const placeBlock = (e) => {
   if(e.buttons == 1 || e.buttons == 3){
     e.currentTarget.className = "block "+currentBlock;
-  }
-}
+  };
+};
+
+const changeBlock = (e) => {
+  currentBlock = e.currentTarget.value;
+};
 
 function setupControls(){
+  //https://www.techiedelight.com/bind-change-event-handler-radio-button-javascript/
+  var radios = document.querySelectorAll('input[type=radio][name="blockRadio"]');
+  radios.forEach(radio => radio.addEventListener('change', (e) => changeBlock(e)));
+};
 
-}
-
-
-export default function setupGrid(){
+function setupGrid(){
 
   // setup the arrays for layers
   // In mc, x/z is the horizontal plane.
   for(let x = 0; x < size; x++){  
     structureBlocks.push([]); // new row in storage
     let row = document.createElement("div");
-    row.id = `row${x}`
+    row.id = `row${x}`;
     row.ondragstart = function() { return false; }; // https://stackoverflow.com/a/4211930
 
     for(let z = 0; z < size; z++){
@@ -41,9 +46,14 @@ export default function setupGrid(){
       block.addEventListener('mousedown', (e) => placeBlock(e));
 
       row.appendChild(block);
-    } 
+    };
 
     document.body.appendChild(row);
-  }
+  };
+};
+
+export default function setup(){
+  setupControls();
+  setupGrid();
 };
 
