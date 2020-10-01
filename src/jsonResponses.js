@@ -1,7 +1,21 @@
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const nbt = require('nbt');
 
 // Temp storage of users. Cleared on reboots on server
-const users = {};
+const savedStructures = {};
+const blockPalette = {
+  "air": -1,
+  "dirt": 0,
+  "stone": 1,
+  "oak_planks": 2,
+  "glass": 3,
+  "bricks": 4,
+  "stone_bricks": 5,
+  "prismarine": 6,
+  "crying_obsidian": 7,
+  "honeycomb_block": 8
+}
 
 const respondJSON = (request, response, status, object) => {
   const headers = {
@@ -25,7 +39,7 @@ const respondJSONMeta = (request, response, status) => {
 
 const getUsers = (request, response) => {
   const responseJSON = {
-    users,
+    users: savedStructures,
   };
 
   return respondJSON(request, response, 200, responseJSON);
@@ -40,7 +54,7 @@ const updateUser = (request, response) => {
     uuid: uuidv4(),
   };
 
-  users[newUser.uuid] = newUser;
+  savedStructures[newUser.uuid] = newUser;
 
   // return a 201 created status
   return respondJSON(request, response, 201, newUser);
@@ -60,32 +74,68 @@ const notFoundMeta = (request, response) => {
   respondJSONMeta(request, response, 404);
 };
 
-const addUser = (request, response, body) => {
+const saveToNBT = (request, response, body) => {
   const responseJSON = {
     message: 'Name and age are both required',
   };
 
-  if (!body.name || !body.age) {
-    responseJSON.id = 'missingParams';
+  if (!body.structureBlocks) {
+    responseJSON.id = 'missing structureBody parameter';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+  else if (!body.size) {
+    responseJSON.id = 'missing size parameter';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  let responseCode = 201;
-  let uuid = uuidv4();
+  let responseCode = 204;
+  let uuid = uuidv4(); //new id for structure
 
-  Object.keys(users).forEach((key) => {
-    if (users[key].name === body.name) {
-      responseCode = 204;
-      uuid = key;
+  if (!savedStructures[uuid]) {
+    responseCode = 201;
+    savedStructures[uuid] = [];
+    for(let i = 0; i < body.size; i++){
+      savedStructures[uuid].push([]);
     }
-  });
-
-  if (responseCode !== 204) {
-    users[uuid] = {};
-    users[uuid].name = body.name;
+  }
+  
+  // Creature Structure in temp memory
+  let blockArray = body.structureBlocks.split(',');
+  for(let x = 0; x < body.size; x++){
+    for(let z = 0; z < body.size; z++){
+      savedStructures[uuid][x][z] = blockArray[x * body.size + z];
+    }
   }
 
-  users[uuid].age = body.age;
+  // blockPalette
+  // Create and save to nbt file
+  let data = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
+  nbt.parse(data, function(error, data) {
+      if (error) { throw error; }
+
+      for(let x = 0; x < body.size; x++){
+        for(let z = 0; z < body.size; z++){
+          if(blockPalette[savedStructures[uuid][x][z]] !== -1){
+            data.value['blocks'].value.value.push({
+              pos: {
+                'type': 'list',
+                'value': {
+                  'type': 'int',
+                  'value': [x, 0, z]
+                }
+              },
+              state: {
+                'type': 'int',
+                'value': blockPalette[savedStructures[uuid][x][z]]
+              }
+            });
+          }
+        }
+      }
+      
+      fs.writeFileSync(`nbt_files/${uuid}.nbt`, new Uint8Array(nbt.writeUncompressed(data)));
+  });
+
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully!';
@@ -106,5 +156,5 @@ module.exports = {
   updateUser,
   notFound,
   notFoundMeta,
-  addUser,
+  saveToNBT,
 };

@@ -1,8 +1,6 @@
 const http = require('http');
 const url = require('url');
 const query = require('querystring');
-// const fs = require('fs');
-// const nbt = require('nbt');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
@@ -63,7 +61,7 @@ const handlePost = (request, response) => {
     const bodyString = Buffer.concat(body).toString();
     const bodyParams = query.parse(bodyString);
 
-    jsonHandler.addUser(request, response, bodyParams);
+    jsonHandler.saveToNBT(request, response, bodyParams);
   });
 };
 
