@@ -5,6 +5,7 @@ import setup from './ui.js';
 // Set global as this is needed to be setup by ui
 // Hold info of the structure itself as a 2d array rn. (will be changed to 3d)
 window.structureBlocks = [];
+window.size = 9;
 
 const handleResponse = (xhr, parseResponse) => {
   switch(xhr.status) 
@@ -62,7 +63,8 @@ const requestUpdate = (e) => {
 // Send post with payload.
 const sendPost = (e) => {
   const payload = {
-      structureBlocks: window.structureBlocks
+      structureBlocks: window.structureBlocks,
+      size: window.size
   };
 
   // Format the data
