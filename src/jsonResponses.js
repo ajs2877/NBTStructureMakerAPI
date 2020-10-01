@@ -5,17 +5,17 @@ const nbt = require('nbt');
 // Temp storage of users. Cleared on reboots on server
 const savedStructures = {};
 const blockPalette = {
-  "air": -1,
-  "dirt": 0,
-  "stone": 1,
-  "oak_planks": 2,
-  "glass": 3,
-  "bricks": 4,
-  "stone_bricks": 5,
-  "prismarine": 6,
-  "crying_obsidian": 7,
-  "honeycomb_block": 8
-}
+  air: -1,
+  dirt: 0,
+  stone: 1,
+  oak_planks: 2,
+  glass: 3,
+  bricks: 4,
+  stone_bricks: 5,
+  prismarine: 6,
+  crying_obsidian: 7,
+  honeycomb_block: 8,
+};
 
 const respondJSON = (request, response, status, object) => {
   const headers = {
@@ -83,59 +83,58 @@ const saveToNBT = (request, response, body) => {
     responseJSON.id = 'missing structureBody parameter';
     return respondJSON(request, response, 400, responseJSON);
   }
-  else if (!body.size) {
+  if (!body.size) {
     responseJSON.id = 'missing size parameter';
     return respondJSON(request, response, 400, responseJSON);
   }
 
   let responseCode = 204;
-  let uuid = uuidv4(); //new id for structure
+  const uuid = uuidv4(); // new id for structure
 
   if (!savedStructures[uuid]) {
     responseCode = 201;
     savedStructures[uuid] = [];
-    for(let i = 0; i < body.size; i++){
+    for (let i = 0; i < body.size; i++) {
       savedStructures[uuid].push([]);
     }
   }
-  
+
   // Creature Structure in temp memory
-  let blockArray = body.structureBlocks.split(',');
-  for(let x = 0; x < body.size; x++){
-    for(let z = 0; z < body.size; z++){
+  const blockArray = body.structureBlocks.split(',');
+  for (let x = 0; x < body.size; x++) {
+    for (let z = 0; z < body.size; z++) {
       savedStructures[uuid][x][z] = blockArray[x * body.size + z];
     }
   }
 
   // blockPalette
   // Create and save to nbt file
-  let data = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
-  nbt.parse(data, function(error, data) {
-      if (error) { throw error; }
+  const rawdata = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
+  nbt.parse(rawdata, (error, data) => {
+    if (error) { throw error; }
 
-      for(let x = 0; x < body.size; x++){
-        for(let z = 0; z < body.size; z++){
-          if(blockPalette[savedStructures[uuid][x][z]] !== -1){
-            data.value['blocks'].value.value.push({
-              pos: {
-                'type': 'list',
-                'value': {
-                  'type': 'int',
-                  'value': [x, 0, z]
-                }
+    for (let x = 0; x < body.size; x++) {
+      for (let z = 0; z < body.size; z++) {
+        if (blockPalette[savedStructures[uuid][x][z]] !== -1) {
+          data.value.blocks.value.value.push({
+            pos: {
+              type: 'list',
+              value: {
+                type: 'int',
+                value: [x, 0, z],
               },
-              state: {
-                'type': 'int',
-                'value': blockPalette[savedStructures[uuid][x][z]]
-              }
-            });
-          }
+            },
+            state: {
+              type: 'int',
+              value: blockPalette[savedStructures[uuid][x][z]],
+            },
+          });
         }
       }
-      
-      fs.writeFileSync(`nbt_files/${uuid}.nbt`, new Uint8Array(nbt.writeUncompressed(data)));
-  });
+    }
 
+    fs.writeFileSync(`nbt_files/${uuid}.nbt`, new Uint8Array(nbt.writeUncompressed(data)));
+  });
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully!';
