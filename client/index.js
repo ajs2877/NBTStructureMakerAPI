@@ -2,7 +2,8 @@
 import createXHR from './xhr.js';
 import setupGrid from './ui.js';
 
-let size = 9;
+// Set global as this is needed to be setup by ui
+window.structureBlocks = [];
 
 const handleResponse = (xhr, parseResponse) => {
   const content = document.querySelector('#content');
@@ -65,14 +66,6 @@ const requestUpdate = (e) => {
   e.preventDefault();
   
   return false;
-};
-
-
-// these three fuctions are from working example of hw when inspected. Very useful!
-// Get value from a field, if it exists. If field doesn't exist, returns null.
-const getValueOf = (form, fieldSelector) => {
-  const field = form.querySelector(fieldSelector);
-  return (field) ? field.value : null;
 };
 
 // Send post with payload.
