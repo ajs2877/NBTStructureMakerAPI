@@ -79,7 +79,7 @@ const urlStruct = {
     notFound: jsonHandler.notFound,
   },
   POST: {
-    '/addUser': handlePost,
+    '/savenbt': handlePost,
     notFound: jsonHandler.notFound,
   },
   HEAD: {

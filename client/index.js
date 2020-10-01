@@ -76,8 +76,8 @@ const sendPost = (e) => {
 
   // make xhr and send it
   const info = {
-      action: "POST",
-      method: "/savenbt" 
+      action: "/savenbt",
+      method: "POST" 
     };
 
   const xhrObj = createXHR(info, {
