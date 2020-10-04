@@ -3,7 +3,7 @@ import createXHR from './xhr.js';
 import setup from './ui.js';
 
 // Set global as this is needed to be setup by ui
-// Hold info of the structure itself as a 2d array rn. (will be changed to 3d)
+// Hold info of the structure itself as a 2d array rright now.
 window.structureBlocks = [];
 window.size = 9;
 
@@ -78,7 +78,7 @@ const sendPost = (e) => {
 
   // make xhr and send it
   const info = {
-      action: "/savenbt",
+      action: "/saveNBT",
       method: "POST" 
     };
 

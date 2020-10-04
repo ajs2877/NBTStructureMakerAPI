@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const nbt = require('nbt');
@@ -46,6 +45,12 @@ const overwriteStructure = (uuid, size, structureBlocks) => {
   return false;
 }
 
+const getStructure = (uuid) => {
+  if(savedStructures[uuid]){
+    return savedStructures[uuid];
+  }
+  return {};
+}
 
 const saveToFile = (uuid, size) => {
   // blockPalette
@@ -117,5 +122,6 @@ module.exports = {
   createNewStructure,
   overwriteStructure,
   saveToFile,
-  loadFromFile
+  loadFromFile,
+  getStructure
 };

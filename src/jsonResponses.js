@@ -1,9 +1,5 @@
 const database = require('./database.js');
-const fs = require('fs');
-const nbt = require('nbt');
-
-// Temp storage of users. Cleared on reboots on server
-const savedStructures = {};
+const { v4: uuidv4 } = require('uuid');
 
 const respondJSON = (request, response, status, object) => {
   const headers = {
@@ -25,29 +21,31 @@ const respondJSONMeta = (request, response, status) => {
   response.end();
 };
 
-const getUsers = (request, response) => {
-  const responseJSON = {
-  };
+const getNBTFile = (request, response) => {
+  const responseJSON = database.getStructure(uuid)
 
   return respondJSON(request, response, 200, responseJSON);
 };
 
 // returns only header
-const getUsersMeta = (request, response) => respondJSONMeta(request, response, 200);
-
-// overwrite a save
-const updateUser = (request, response, uuid) => {
-  const newUser = {
-    uuid: uuidv4(),
-  };
-
-  if(database.overwriteStructure(uuid, body.size, body.structureBlocks)){
-
-  }
-
-  // return a 201 created status
-  return respondJSON(request, response, 201, newUser);
+const getNBTFileMeta = (request, response) => {
+  respondJSONMeta(request, response, 200);
 };
+
+
+
+const getFileList = (request, response) => {
+  const responseJSON = database.getStructure(uuid)
+
+  return respondJSON(request, response, 200, responseJSON);
+};
+
+// returns only header
+const getFileListMeta = (request, response) => {
+  respondJSONMeta(request, response, 200);
+};
+
+
 
 const notFound = (request, response) => {
   const responseJSON = {
@@ -83,18 +81,13 @@ const saveToNBT = (request, response, body) => {
     uuid = body.uuid;
   }
 
-  let responseCode = 204;
-
   // if a new structure was made, set the response to state that
+  let responseCode = 204;
   if (database.createNewStructure(uuid, body.size)) {
     responseCode = 201;
   }
   
-  // Creature Structure in temp memory
   database.overwriteStructure(uuid, body.size, body.structureBlocks);
-
-  // blockPalette
-  // Create and save to nbt file
   database.saveToFile(uuid, body.size);
 
 
@@ -102,19 +95,18 @@ const saveToNBT = (request, response, body) => {
     responseJSON.message = 'Created Successfully!';
     return respondJSON(request, response, responseCode, responseJSON);
   }
-  if (responseCode === 204) {
+  else{
     responseJSON.message = 'Updated Successfully!';
     return respondJSON(request, response, responseCode, responseJSON);
   }
-
-  return respondJSONMeta(request, response, responseCode);
 };
 
 // set public modules
 module.exports = {
-  getUsers,
-  getUsersMeta,
-  updateUser,
+  getNBTFile,
+  getNBTFileMeta,
+  getFileList,
+  getFileListMeta,
   notFound,
   notFoundMeta,
   saveToNBT,

@@ -72,17 +72,18 @@ const urlStruct = {
     '/index.js': htmlHandler.getPage,
     '/xhr.js': htmlHandler.getPage,
     '/ui.js': htmlHandler.getPage,
-    '/getUsers': jsonHandler.getUsers,
-    '/updateUser': jsonHandler.updateUser,
+    '/getNBTFile': jsonHandler.getNBTFile,
+    '/getFileList': jsonHandler.getFileList,
     notFound: jsonHandler.notFound,
   },
   POST: {
-    '/savenbt': handlePost,
+    '/saveNBT': handlePost,
     notFound: jsonHandler.notFound,
   },
   HEAD: {
-    '/getUsers': jsonHandler.getUsersMeta,
-    notFound: jsonHandler.getUsersMeta,
+    '/getNBTFile': jsonHandler.getNBTFileMeta,
+    '/getFileList': jsonHandler.getFileListMeta,
+    notFound: jsonHandler.getFileMeta,
   },
   notFound: jsonHandler.notFound,
 };
