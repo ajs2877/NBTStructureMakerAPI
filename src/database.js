@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 const fs = require('fs');
 const nbt = require('nbt');
 
@@ -21,8 +22,11 @@ const blockPalette = {
 const createNewStructure = (uuid, size) => {
   if(!savedStructures[uuid]){
     savedStructures[uuid] = [];
-    for (let i = 0; i < size; i++) {
+    for (let x = 0; x < size; x++) {
       savedStructures[uuid].push([]);
+      for (let z = 0; z < size; z++) {
+        savedStructures[uuid][x][z] = -1;
+      }
     }
     return true;
   }
@@ -76,28 +80,31 @@ const saveToFile = (uuid, size) => {
 
 const loadFromFile = () => {
   
+  // https://stackoverflow.com/a/10049704
   fs.readdir("nbt_files", function(err, filenames) {
     if (err) {
       onError(err);
       return;
     }
     filenames.forEach(function(filename) {
-      fs.readFile("nbt_files" + filename, 'utf-8', function(err, content) {
+      fs.readFile("nbt_files/" + filename, function(err, content) {
         if (err) {
           onError(err);
           return;
         }
-        onFileContent(filename, content);
-        nbt.parse(rawdata, (error, data) => {
+
+        const uuid = path.parse(filename).name;
+
+        nbt.parse(content, (error, data) => {
           if (error) { throw error; }
 
-          createNewStructure(filename, data.value.size.value[0]);
+          createNewStructure(uuid, data.value.size.value.value[0]);
       
-          for (let blockObj in data.value.blocks.value.value) {
-            blockId = blockObj.state.value.value;
-            blockPos = blockObj.pos.value.value.value.value;
-            savedStructures[filename][blockPos[0]][blockPos[2]] = blockId
-          }
+          data.value.blocks.value.value.forEach(blockObj =>{
+            blockId = blockObj.state.value;
+            blockPos = blockObj.pos.value.value;
+            savedStructures[uuid][blockPos[0]][blockPos[2]] = blockId
+          });
         });
       });
     });
