@@ -25,40 +25,54 @@ html, body {
   margin: 5px;
 }
 
+img{
+  width: 50px;
+  height: 50px;
+}
+
 .air {
-  background: #ffffff;
+  background-image: url("/images/air.jpg");
+  background-size: contain;
 }
 
 .dirt {
-  background: #61402b;
+  background-image: url("/images/dirt.jpg");
+  background-size: contain;
 }
 
 .stone {
-  background: #757575;
+  background-image: url("/images/stone.jpg");
+  background-size: contain;
 }
 
 .oak_planks {
-  background: #af845b;
+  background-image: url("/images/oak_planks.jpg");
+  background-size: contain;
 }
 
 .glass {
-  background: #c0dfe0;
+  background-image: url("/images/glass.jpg");
+  background-size: contain;
 }
 
 .bricks {
-  background: #924627;
+  background-image: url("/images/bricks.jpg");
+  background-size: contain;
 }
 
 .prismarine {
-  background: #0e6699;
+  background-image: url("/images/prismarine.jpg");
+  background-size: contain;
 }
 
 .crying_obsidian {
-  background: #470470;
+  background-image: url("/images/crying_obsidian.jpg");
+  background-size: contain;
 }
 
 .honeycomb_block {
-  background: #f59312;
+  background-image: url("/images/honeycomb_block.jpg");
+  background-size: contain;
 }
 
 .inline{
