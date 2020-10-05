@@ -1,6 +1,19 @@
 "use strict";
 
 let currentBlock = "dirt";
+const blockPalette = [
+  "air",
+  "dirt",
+  "stone",
+  "oak_planks",
+  "glass",
+  "bricks",
+  "stone_bricks",
+  "prismarine",
+  "crying_obsidian",
+  "honeycomb_block",
+];
+
 
 
 //https://stackoverflow.com/a/15098620
@@ -24,21 +37,41 @@ function setupControls(){
   radios.forEach(radio => radio.addEventListener('change', (e) => changeBlockSelected(e)));
 };
 
-function setupGrid(){
+export function setupGrid(structureData){
+  let xSize = window.structureSize;
+  let zSize = window.structureSize;
+
+  if(structureData){
+    xSize = structureData.length;
+    zSize = structureData[0].length;
+  }
+  
+  document.querySelectorAll(".grid").forEach(gridElement => {
+    document.body.removeChild(gridElement);
+  })
 
   // setup the arrays for layers
   // In mc, x/z is the horizontal plane.
-  for(let x = 0; x < window.size; x++){  
+  for(let x = 0; x < xSize; x++){  
     structureBlocks.push([]); // new row in storage
     let row = document.createElement("div");
     row.id = `row${x}`;
+    row.className = `grid`;
     row.ondragstart = function() { return false; }; // https://stackoverflow.com/a/4211930
 
-    for(let z = 0; z < window.size; z++){
+    for(let z = 0; z < zSize; z++){
       window.structureBlocks[x].push("air"); // -1 is air
       let block = document.createElement("div");
       block.classList.add("block");
-      block.classList.add("air");
+
+      if(structureData){
+        block.classList.add(blockPalette[structureData[x][z] + 1]); // + 1 because air is at index 0 instead of -1
+      }
+      else{
+        block.classList.add("air");
+      }
+
+
       block.id = `${x},${z}`; // Store coordinate. Unique to every block
       block.ondragstart = function() { return false; }; // https://stackoverflow.com/a/4211930
 
@@ -52,8 +85,7 @@ function setupGrid(){
   };
 };
 
-export default function setup(){
+export function setupMain(){
   setupControls();
   setupGrid();
 };
-

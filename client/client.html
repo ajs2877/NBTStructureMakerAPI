@@ -1,47 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Our simple HTTP server</title>
+  <title>NBT Structure Maker API</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
   <script type="module" src="/index.js"></script>
 </head>
 <body>
   <section id="top">
-    <div class="layerControls">
-      <button id="downbutton">Down</button>
-      Layer <span id="currentLayer">1</span>/<span id="totalLayers">9</span>
-      <button id="upbutton">Up</button>
-    </div>
+    <!-- Multi layered jigsaws can be a future add-on to this project
+      <div class="layerControls">
+        <button id="downbutton">Down</button>
+        Layer <span id="currentLayer">1</span>/<span id="totalLayers">9</span>
+        <button id="upbutton">Up</button>
+      </div>
+    -->
+    <h1>NBT Structure Maker API</h1>
+    <select id="files">
+      <option value="">No file selected</option>
+    </select>
     <button id="saveButton">Save NBT</button>
+    <button id="loadButton">Load NBT File</button>
   </section>
   <section id="blockSelector">
     <div class="button">
-      <input type="radio" name="blockRadio" value="dirt"/>
-      <label for="dirt">Dirt</label>
+      <div class="inline">
+        <h3>Dirt</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="dirt" checked/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
 
-      <input type="radio" name="blockRadio" value="stone"/>
-      <label for="stone">Stone</label>
+      <div class="inline">
+        <h3>Stone</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="stone"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="oak_planks"/>
-      <label for="oak_planks">oak_planks</label>
+      <div class="inline">
+        <h3>Oak Planks</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="oak_planks"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="glass"/>
-      <label for="glass">glass</label>
+      <div class="inline">
+        <h3>Glass</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="glass"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="bricks"/>
-      <label for="bricks">bricks</label>
+      <div class="inline">
+        <h3>Bricks</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="bricks"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="prismarine"/>
-      <label for="prismarine">prismarine</label>
+      <div class="inline">
+        <h3>Prismarine</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="prismarine"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="crying_obsidian"/>
-      <label for="crying_obsidian">crying_obsidian</label>
+      <div class="inline">
+        <h3>Crying Obsidian</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="crying_obsidian"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="honeycomb_block"/>
-      <label for="honeycomb_block">honeycomb_block</label>
+      <div class="inline">
+        <h3>Honeycomb Block</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="honeycomb_block"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
       
-      <input type="radio" name="blockRadio" value="air"/>
-      <label for="air">air</label>
+      <div class="inline">
+        <h3>Air</h3>
+        <label>
+          <input type="radio" name="blockRadio" value="air"/>
+          <img src="http://placehold.it/40x60/0bf/fff&text=A">
+        </label>
+      </div>
     </div>
   </section>
 </body>

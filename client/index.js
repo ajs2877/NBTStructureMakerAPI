@@ -1,70 +1,82 @@
 "use strict";
 import createXHR from './xhr.js';
-import setup from './ui.js';
+import {setupMain} from './ui.js';
+import {setupGrid} from './ui.js';
 
 // Set global as this is needed to be setup by ui
 // Hold info of the structure itself as a 2d array rright now.
 window.structureBlocks = [];
-window.size = 9;
+window.structureSize = 20;
 
 const handleResponse = (xhr, parseResponse) => {
-  switch(xhr.status) 
-  {
-      case 200: 
-        alert(`<b>Success</b>`);
-        break;
-
-      case 201: 
-        alert('<b>Create</b>');
-        break;
-
-      case 204: 
-        alert('<b>Updated (No Content)</b>');
-        break;
-
-      case 400: 
-        alert( `<b>Bad Request</b>`);
-        break;
-
-      case 404: 
-        alert(`<b>Resource Not Found</b>`);
-        break;
-
-      default: 
-        alert(`Error code not implemented by client.`);
-        break;
-  }
+  let msg = "";
   
   if(parseResponse && xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
     const obj = JSON.parse(xhr.response);
     console.dir(obj);
-  } 
-  else { 
-    alert('<p>Meta Data Recieved<p>');
+    if(obj.message){
+      msg += obj.message;
+    }
+
+    if(obj.uuids){
+      let fileElement = document.querySelector("#files");
+      // remove all entries except for the 'no file selected' option
+      while (fileElement.lastChild.value) {
+        fileElement.removeChild(fileElement.lastChild);
+      }
+
+      obj.uuids.forEach(uuid =>{
+        var optionElement = document.createElement("option");
+        optionElement.value = uuid;
+        optionElement.text = uuid;
+        fileElement.appendChild(optionElement);
+      });
+    }
+
+    if(obj.structureData){
+      setupGrid(obj.structureData);
+    }
   }
+
+  alert(msg);
 };
 
-const requestUpdate = (e) => {
-  
-  //make a new AJAX request asynchronously
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET","/sdfgh");
-  xhr.setRequestHeader('Accept', 'application/json');
+const requestNBTFile = (e) => {
+  const file = document.querySelector("#files").value;
 
-  //get request or head request
-  xhr.onload = () => handleResponse(xhr, true);
-  
-  xhr.send();
-  e.preventDefault();
+  if(file){
+    //make a new AJAX request asynchronously
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET",`/getNBTFile?uuid=${file}`);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.onload = () => handleResponse(xhr, true);
+    xhr.send();
+    e.preventDefault();
+  }
+  else{
+    alert("No file was selected to load.");
+  }
+
   
   return false;
 };
 
+const getAllNBTFiles = () => {
+  //make a new AJAX request asynchronously
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET","/getFileList");
+  xhr.setRequestHeader('Accept', 'application/json');
+  xhr.onload = () => handleResponse(xhr, true);
+  xhr.send();
+
+  return false;
+};
+
 // Send post with payload.
-const sendPost = (e) => {
+const sendNBTData = (e) => {
   const payload = {
       structureBlocks: window.structureBlocks,
-      size: window.size
+      size: window.structureSize
   };
 
   // Format the data
@@ -94,8 +106,10 @@ const sendPost = (e) => {
 
 // add reaction to submitting
 const init = () => {
-  document.querySelector("#saveButton").addEventListener('click', sendPost);
-  setup();
+  document.querySelector("#saveButton").addEventListener('click', sendNBTData);
+  document.querySelector("#loadButton").addEventListener('click', requestNBTFile);
+  setupMain();
+  getAllNBTFiles();
 };
 
 window.onload = init;

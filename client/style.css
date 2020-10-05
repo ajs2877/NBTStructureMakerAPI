@@ -1,14 +1,10 @@
 html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
   background-color: black;
   color: whitesmoke;
+  text-align: center;
 }
 
 #top {
-  text-align: center;
   margin: 0 auto;
 }
 
@@ -63,4 +59,31 @@ html, body {
 
 .honeycomb_block {
   background: #f59312;
+}
+
+.inline{
+  display: inline-block;
+  margin: 0em 1em 1em 1em;
+}
+
+
+
+/* https://stackoverflow.com/a/17541916 */
+
+/* HIDE RADIO */
+[type=radio] { 
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + img {
+  cursor: pointer;
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + img {
+  outline: 2px solid #f00;
 }

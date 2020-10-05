@@ -35,8 +35,11 @@ const getNBTFile = (request, response, parsedUrl) => {
   const params = query.parse(parsedUrl.query);
   if(params.uuid){
 
-    let responseJSON = database.getStructure(params.uuid);
-    if(Object.keys(responseJSON).length !== 0){
+    let responseJSON = {
+      structureData: database.getStructure(params.uuid)
+    }
+
+    if(Object.keys(responseJSON.structureData).length !== 0){
       return respondJSON(request, response, 200, responseJSON);
     }
 
@@ -83,7 +86,8 @@ const getNBTFileMeta = (request, response, parsedUrl) => {
 
 const getFileList = (request, response) => {
   const responseJSON = {
-    message: `File UUIDs avaliable:  \n  ${database.getAllStructureUUIDs().join("  \n  ")}`
+    message: `List of avaliable files successfully retrieved}`,
+    uuids: database.getAllStructureUUIDs()
   };
   return respondJSON(request, response, 200, responseJSON);
 };
