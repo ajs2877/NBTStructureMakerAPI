@@ -23,6 +23,7 @@ html, body {
   width: 30px;
   height: 30px;
   margin: 5px;
+  background-size: contain;
 }
 
 img{
@@ -32,47 +33,38 @@ img{
 
 .air {
   background-image: url("/images/air.jpg");
-  background-size: contain;
 }
 
 .dirt {
   background-image: url("/images/dirt.jpg");
-  background-size: contain;
 }
 
 .stone {
   background-image: url("/images/stone.jpg");
-  background-size: contain;
 }
 
 .oak_planks {
   background-image: url("/images/oak_planks.jpg");
-  background-size: contain;
 }
 
 .glass {
   background-image: url("/images/glass.jpg");
-  background-size: contain;
 }
 
 .bricks {
   background-image: url("/images/bricks.jpg");
-  background-size: contain;
 }
 
 .prismarine {
   background-image: url("/images/prismarine.jpg");
-  background-size: contain;
 }
 
 .crying_obsidian {
   background-image: url("/images/crying_obsidian.jpg");
-  background-size: contain;
 }
 
 .honeycomb_block {
   background-image: url("/images/honeycomb_block.jpg");
-  background-size: contain;
 }
 
 .inline{
@@ -82,7 +74,13 @@ img{
 
 
 
-/* https://stackoverflow.com/a/17541916 */
+/**
+    Neat way of hiding the radio button's normal toggle and instead, 
+    make the image itself be the toggle.
+
+    Source:
+    https://stackoverflow.com/a/17541916 
+ */
 
 /* HIDE RADIO */
 [type=radio] { 

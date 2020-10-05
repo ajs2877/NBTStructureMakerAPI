@@ -4,6 +4,8 @@ const fs = require('fs'); // pull in the file system module
 // This is a synchronous operation, so you'd only
 // want to do it on startup.
 // This not the best way to load files unless you have few files.
+// Speaking of which, I should clean this whole mess up lmao.
+// I wonder what the asynchronous way is that they will teach us...
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
 const js = fs.readFileSync(`${__dirname}/../client/index.js`);
@@ -38,7 +40,14 @@ const fileStruct = {
   '/images/air.jpg': { type: 'image/jpeg', page: air },
 };
 
-// function to get the index page
+/**
+ * Returns the page that clientside html is asking for.
+ * Handles index page, css, js, images...
+ * 
+ * @param {*} request 
+ * @param {*} response 
+ * @param {*} parsedUrl 
+ */
 const getPage = (request, response, parsedUrl) => {
   const file = parsedUrl.pathname;
   response.writeHead(200, { 'Content-Type': fileStruct[file].type });

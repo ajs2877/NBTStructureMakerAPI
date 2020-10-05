@@ -2,6 +2,11 @@ const { v4: uuidv4 } = require('uuid');
 const query = require('querystring');
 const database = require('./database.js');
 
+/**
+ * writes the header and sends the response to 
+ * the user along with the JSON payload.
+ * Use this for payload responses.
+ */
 const respondJSON = (request, response, status, object) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -12,12 +17,15 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
+/**
+ * Sends only the header info. use this for meta responses.
+ */
 const respondJSONMeta = (request, response, status, headerInfo) => {
   const headers = {
     'Content-Type': 'application/json',
   };
 
-  // https://stackoverflow.com/a/30871719
+  // Learned Object.assign from https://stackoverflow.com/a/30871719
   if (headerInfo) {
     const headersFinal = { ...headers, ...headerInfo };
     response.writeHead(status, headersFinal);
@@ -29,6 +37,10 @@ const respondJSONMeta = (request, response, status, headerInfo) => {
   response.end();
 };
 
+/**
+ * Using the passed in UUID by query param, crafts and
+ * sends back the nbt data in a response.
+ */
 const getNBTFile = (request, response, parsedUrl) => {
   const params = query.parse(parsedUrl.query);
   if (params.uuid) {
@@ -52,6 +64,10 @@ const getNBTFile = (request, response, parsedUrl) => {
   return respondJSON(request, response, 400, responseJSON);
 };
 
+/**
+ * Using the passed in UUID by query param, crafts and
+ * sends back the size of the nbt data by header.
+ */
 const getNBTFileMeta = (request, response, parsedUrl) => {
   const params = query.parse(parsedUrl.query);
   if (params.uuid) {
@@ -75,21 +91,33 @@ const getNBTFileMeta = (request, response, parsedUrl) => {
   return respondJSONMeta(request, response, 400, responseJSON);
 };
 
+/**
+ * Will return a list of all UUIDs except for the template file's as a response.
+ */
 const getFileList = (request, response) => {
   const responseJSON = {
-    uuids: database.getAllStructureUUIDs(),
+    uuids: database.getAllStructureUUIDs().filter(uuid => uuid !== "base_template"),
   };
   return respondJSON(request, response, 200, responseJSON);
 };
 
-// returns only header
+/**
+ * Will return how many usable UUIDs there are 
+ * minus the template file's through header.
+ */
 const getFileListMeta = (request, response) => {
   const responseJSON = {
-    'X-files-avaliable': `${database.getAllStructureUUIDs().length}`,
+    'X-files-avaliable': `${database.getAllStructureUUIDs().filter(uuid => uuid !== "base_template").length}`,
   };
   respondJSONMeta(request, response, 200, responseJSON);
 };
 
+/**
+ * Sneaky Little Hobbitses...
+ * How did they get here???
+ * 
+ * Nevertheless, they just got 404'ed!
+ */
 const notFound = (request, response) => {
   const responseJSON = {
     message: 'The page you are looking for was not found.',
@@ -99,16 +127,27 @@ const notFound = (request, response) => {
   respondJSON(request, response, 404, responseJSON);
 };
 
-// return header
+/**
+ * Sneaky Little Hobbitses...
+ * How did they get here???
+ * 
+ * Nevertheless, they just got 404'ed!
+ */
 const notFoundMeta = (request, response) => {
   respondJSONMeta(request, response, 404);
 };
 
+/**
+ * Will take the payload out of the body (the nbt data) and
+ * will save it locally and then to an actual nbt file.
+ * If file existed locally or physically, it will be overwritten.
+ */
 const saveToNBT = (request, response, body) => {
   const responseJSON = {
     message: 'Structure data required',
   };
 
+  // validate the payload
   if (!body.structureBlocks) {
     responseJSON.id = 'missing structureBody parameter';
     return respondJSON(request, response, 400, responseJSON);
@@ -124,12 +163,13 @@ const saveToNBT = (request, response, body) => {
     uuid = body.uuid;
   }
 
-  // if a new structure was made, set the response to state that
+  // if a new structure was made, set the response code to state that
   let responseCode = 204;
   if (database.createNewStructure(uuid, body.size)) {
     responseCode = 201;
   }
 
+  // Data is now set on server
   database.overwriteStructure(uuid, body.structureBlocks);
   database.saveToFile(uuid);
 
