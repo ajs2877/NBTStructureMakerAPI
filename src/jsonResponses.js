@@ -87,7 +87,7 @@ const getFileListMeta = (request, response) => {
   const responseJSON = {
     'X-files-avaliable': `${database.getAllStructureUUIDs().length}`,
   };
-  respondJSONMeta(request, response, 201, responseJSON);
+  respondJSONMeta(request, response, 200, responseJSON);
 };
 
 const notFound = (request, response) => {
