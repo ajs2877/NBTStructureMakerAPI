@@ -52,6 +52,10 @@ const getStructure = (uuid) => {
   return {};
 }
 
+const getAllStructureUUIDs = () => {
+  return Array.from(savedStructures.keys());
+}
+
 const saveToFile = (uuid, size) => {
   // blockPalette
   // Create and save to nbt file
@@ -123,5 +127,6 @@ module.exports = {
   overwriteStructure,
   saveToFile,
   loadFromFile,
-  getStructure
+  getStructure,
+  getAllStructureUUIDs
 };

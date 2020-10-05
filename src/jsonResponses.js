@@ -11,7 +11,6 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
-// Send only header
 const respondJSONMeta = (request, response, status) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -22,27 +21,31 @@ const respondJSONMeta = (request, response, status) => {
 };
 
 const getNBTFile = (request, response) => {
-  const responseJSON = database.getStructure(uuid)
+  const responseJSON = database.getStructure(uuid);
 
   return respondJSON(request, response, 200, responseJSON);
 };
 
-// returns only header
+
 const getNBTFileMeta = (request, response) => {
-  respondJSONMeta(request, response, 200);
+  respondJSONMeta(request, response, 201);
 };
 
 
 
 const getFileList = (request, response) => {
-  const responseJSON = database.getStructure(uuid)
-
+  const responseJSON = {
+    message: `File UUIDs avaliable: \n${database.getAllStructureUUIDs().join("\n")}`
+  };
   return respondJSON(request, response, 200, responseJSON);
 };
 
 // returns only header
 const getFileListMeta = (request, response) => {
-  respondJSONMeta(request, response, 200);
+  const responseJSON = {
+    message: `Files on database: ${database.getAllStructureUUIDs().length()} files`
+  };
+  respondJSONMeta(request, response, 201, responseJSON);
 };
 
 
