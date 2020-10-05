@@ -19,7 +19,8 @@ const fileStruct = {
 };
 
 // function to get the index page
-const getPage = (request, response, file) => {
+const getPage = (request, response, parsedUrl) => {
+  const file = parsedUrl.pathname;
   response.writeHead(200, { 'Content-Type': fileStruct[file].type });
   response.write(fileStruct[file].page);
   response.end();

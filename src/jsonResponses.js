@@ -1,5 +1,6 @@
 const database = require('./database.js');
 const { v4: uuidv4 } = require('uuid');
+const query = require('querystring');
 
 const respondJSON = (request, response, status, object) => {
   const headers = {
@@ -11,31 +12,78 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
-const respondJSONMeta = (request, response, status) => {
+const respondJSONMeta = (request, response, status, headerInfo) => {
   const headers = {
     'Content-Type': 'application/json',
   };
+
+  //https://stackoverflow.com/a/30871719
+  if(headerInfo){
+    const headersFinal = Object.assign({}, headers, headerInfo);
+    response.writeHead(status, headersFinal);
+    response.end();
+    return;
+  }
 
   response.writeHead(status, headers);
   response.end();
 };
 
-const getNBTFile = (request, response) => {
-  const responseJSON = database.getStructure(uuid);
 
-  return respondJSON(request, response, 200, responseJSON);
+
+const getNBTFile = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
+  if(params.uuid){
+
+    let responseJSON = database.getStructure(params.uuid);
+    if(Object.keys(responseJSON).length !== 0){
+      return respondJSON(request, response, 200, responseJSON);
+    }
+
+    responseJSON = {
+      message : "No file found with that uuid"
+    };
+    return respondJSON(request, response, 404, responseJSON);
+  }
+  else{
+    const responseJSON = {
+      message : "Please pass in a uuid for a file to search for."
+    };
+    return respondJSON(request, response, 400, responseJSON);
+  }
 };
 
 
-const getNBTFileMeta = (request, response) => {
-  respondJSONMeta(request, response, 201);
+const getNBTFileMeta = (request, response, parsedUrl) => {
+  
+  const params = query.parse(parsedUrl.query);
+  if(params.uuid){
+    const structureObj = database.getStructure(params.uuid);
+    let responseJSON = {
+      "X-structure-dimensions": `${structureObj.length}, ${structureObj[0].length}`
+    };
+    if(Object.keys(structureObj).length !== 0){
+      return respondJSONMeta(request, response, 200, responseJSON);
+    }
+
+    responseJSON = {
+      "X-database-error": "No file found with that uuid"
+    };
+    return respondJSONMeta(request, response, 404, responseJSON);
+  }
+  else{
+    const responseJSON = {
+      "X-database-error": "Please pass in a uuid for a file to search for."
+    };
+    respondJSONMeta(request, response, 400, responseJSON);
+  }
 };
 
 
 
 const getFileList = (request, response) => {
   const responseJSON = {
-    message: `File UUIDs avaliable: \n${database.getAllStructureUUIDs().join("\n")}`
+    message: `File UUIDs avaliable:  \n  ${database.getAllStructureUUIDs().join("  \n  ")}`
   };
   return respondJSON(request, response, 200, responseJSON);
 };
@@ -43,7 +91,7 @@ const getFileList = (request, response) => {
 // returns only header
 const getFileListMeta = (request, response) => {
   const responseJSON = {
-    message: `Files on database: ${database.getAllStructureUUIDs().length()} files`
+    "X-files-avaliable": `${database.getAllStructureUUIDs().length}`
   };
   respondJSONMeta(request, response, 201, responseJSON);
 };
@@ -63,6 +111,8 @@ const notFound = (request, response) => {
 const notFoundMeta = (request, response) => {
   respondJSONMeta(request, response, 404);
 };
+
+
 
 const saveToNBT = (request, response, body) => {
   const responseJSON = {

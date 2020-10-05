@@ -53,7 +53,7 @@ const getStructure = (uuid) => {
 }
 
 const getAllStructureUUIDs = () => {
-  return Array.from(savedStructures.keys());
+  return Array.from(Object.keys(savedStructures));
 }
 
 const saveToFile = (uuid, size) => {

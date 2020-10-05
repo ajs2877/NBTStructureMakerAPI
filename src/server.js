@@ -95,7 +95,7 @@ const onRequest = (request, response) => {
   const resultFunction = urlStruct[request.method][parsedUrl.pathname];
   if (resultFunction) {
     if (resultFunction.length === 3) {
-      resultFunction(request, response, parsedUrl.pathname);
+      resultFunction(request, response, parsedUrl);
     } else {
       resultFunction(request, response);
     }
