@@ -44,13 +44,13 @@ const getNBTFile = (request, response, parsedUrl) => {
     }
 
     responseJSON = {
-      message : "No file found with that uuid"
+      message : "No file found with that uuid."
     };
     return respondJSON(request, response, 404, responseJSON);
   }
   else{
     const responseJSON = {
-      message : "Please pass in a uuid for a file to search for."
+      message : "Please select a file to load."
     };
     return respondJSON(request, response, 400, responseJSON);
   }
@@ -86,7 +86,6 @@ const getNBTFileMeta = (request, response, parsedUrl) => {
 
 const getFileList = (request, response) => {
   const responseJSON = {
-    message: `List of avaliable files successfully retrieved}`,
     uuids: database.getAllStructureUUIDs()
   };
   return respondJSON(request, response, 200, responseJSON);
@@ -133,7 +132,7 @@ const saveToNBT = (request, response, body) => {
   }
   
   // new id for structure if no uuid is passed in
-  const uuid = uuidv4(); 
+  let uuid = uuidv4(); 
   if (body.uuid) {
     uuid = body.uuid;
   }
@@ -144,18 +143,18 @@ const saveToNBT = (request, response, body) => {
     responseCode = 201;
   }
   
-  database.overwriteStructure(uuid, body.size, body.structureBlocks);
-  database.saveToFile(uuid, body.size);
+  database.overwriteStructure(uuid, body.structureBlocks);
+  database.saveToFile(uuid);
 
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully!';
     return respondJSON(request, response, responseCode, responseJSON);
   }
-  else{
-    responseJSON.message = 'Updated Successfully!';
-    return respondJSON(request, response, responseCode, responseJSON);
-  }
+
+  // No need to change message for updating as code 204 
+  // will automatically not return the response text 
+  return respondJSON(request, response, responseCode, responseJSON);
 };
 
 // set public modules

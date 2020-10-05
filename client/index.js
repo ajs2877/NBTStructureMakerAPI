@@ -6,16 +6,28 @@ import {setupGrid} from './ui.js';
 // Set global as this is needed to be setup by ui
 // Hold info of the structure itself as a 2d array rright now.
 window.structureBlocks = [];
-window.structureSize = 20;
 
 const handleResponse = (xhr, parseResponse) => {
-  let msg = "";
+  let msg;
+
+  switch(xhr.status) 
+  {
+      case 201: 
+        // A new NBT file was made.
+        // Refresh list to show current files avaliable.
+        getAllNBTFiles(); 
+        break;
+
+      case 204: 
+        msg = "Updated file successfully!"
+        break;
+  }
   
   if(parseResponse && xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
     const obj = JSON.parse(xhr.response);
     console.dir(obj);
     if(obj.message){
-      msg += obj.message;
+      msg = obj.message;
     }
 
     if(obj.uuids){
@@ -38,7 +50,9 @@ const handleResponse = (xhr, parseResponse) => {
     }
   }
 
-  alert(msg);
+  if(msg){
+    alert(msg);
+  }
 };
 
 const requestNBTFile = (e) => {
@@ -76,8 +90,13 @@ const getAllNBTFiles = () => {
 const sendNBTData = (e) => {
   const payload = {
       structureBlocks: window.structureBlocks,
-      size: window.structureSize
+      size: window.structureBlocks[0]
   };
+  
+  const file = document.querySelector("#files").value;
+  if(file){
+    payload.uuid = file;
+  }
 
   // Format the data
   // From working example of hw when inspected. 

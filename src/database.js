@@ -24,7 +24,7 @@ const createNewStructure = (uuid, size) => {
     for (let x = 0; x < size; x++) {
       savedStructures[uuid].push([]);
       for (let z = 0; z < size; z++) {
-        savedStructures[uuid][x][z] = -1;
+        savedStructures[uuid][x][z] = "air";
       }
     }
     return true;
@@ -32,14 +32,18 @@ const createNewStructure = (uuid, size) => {
   return false;
 }
 
-const overwriteStructure = (uuid, size, structureBlocks) => {
+//https://stackoverflow.com/a/44946686
+const TwoDimensional = (arr, size) => {
+  var res = []; 
+  for(var i=0;i < arr.length;i = i+size)
+  res.push(arr.slice(i,i+size));
+  return res;
+}
+
+const overwriteStructure = (uuid, structureBlocks) => {
   if(savedStructures[uuid]){
-    const blockArray = structureBlocks.split(',');
-    for (let x = 0; x < size; x++) {
-      for (let z = 0; z < size; z++) {
-        savedStructures[uuid][x][z] = blockArray[x * size + z];
-      }
-    }
+    let blockArray = structureBlocks.split(',');
+    savedStructures[uuid] = TwoDimensional(blockArray, Math.sqrt(blockArray.length));
     return true;
   }
   return false;
@@ -56,15 +60,15 @@ const getAllStructureUUIDs = () => {
   return Array.from(Object.keys(savedStructures));
 }
 
-const saveToFile = (uuid, size) => {
+const saveToFile = (uuid) => {
   // blockPalette
   // Create and save to nbt file
   const rawdata = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
   nbt.parse(rawdata, (error, data) => {
     if (error) { throw error; }
 
-    for (let x = 0; x < size; x++) {
-      for (let z = 0; z < size; z++) {
+    for (let x = 0; x < savedStructures[uuid].length; x++) {
+      for (let z = 0; z < savedStructures[uuid][0].length; z++) {
         if (blockPalette[savedStructures[uuid][x][z]] !== -1) {
           data.value.blocks.value.value.push({
             pos: {
@@ -112,7 +116,20 @@ const loadFromFile = () => {
           data.value.blocks.value.value.forEach(blockObj =>{
             blockId = blockObj.state.value;
             blockPos = blockObj.pos.value.value;
-            savedStructures[uuid][blockPos[0]][blockPos[2]] = blockId
+            if(!savedStructures[uuid]){
+              savedStructures[uuid] = [];
+            }
+            if(!savedStructures[uuid][blockPos[0]]){
+              savedStructures[uuid][blockPos[0]] = [];
+            }
+            let blockName = "air";
+            for(let name of Object.keys(blockPalette)){
+              if(blockPalette[name] === blockId){
+                blockName = name;
+                break;
+              }
+            }
+            savedStructures[uuid][blockPos[0]][blockPos[2]] = blockName;
           });
         });
       });
