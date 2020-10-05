@@ -17,48 +17,44 @@ const blockPalette = {
   honeycomb_block: 8,
 };
 
-
 const createNewStructure = (uuid, size) => {
-  if(!savedStructures[uuid]){
+  if (!savedStructures[uuid]) {
     savedStructures[uuid] = [];
     for (let x = 0; x < size; x++) {
       savedStructures[uuid].push([]);
       for (let z = 0; z < size; z++) {
-        savedStructures[uuid][x][z] = "air";
+        savedStructures[uuid][x][z] = 'air';
       }
     }
     return true;
   }
   return false;
-}
+};
 
-//https://stackoverflow.com/a/44946686
+// https://stackoverflow.com/a/44946686
 const TwoDimensional = (arr, size) => {
-  var res = []; 
-  for(var i=0;i < arr.length;i = i+size)
-  res.push(arr.slice(i,i+size));
+  const res = [];
+  for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size));
   return res;
-}
+};
 
 const overwriteStructure = (uuid, structureBlocks) => {
-  if(savedStructures[uuid]){
-    let blockArray = structureBlocks.split(',');
+  if (savedStructures[uuid]) {
+    const blockArray = structureBlocks.split(',');
     savedStructures[uuid] = TwoDimensional(blockArray, Math.sqrt(blockArray.length));
     return true;
   }
   return false;
-}
+};
 
 const getStructure = (uuid) => {
-  if(savedStructures[uuid]){
+  if (savedStructures[uuid]) {
     return savedStructures[uuid];
   }
   return {};
-}
+};
 
-const getAllStructureUUIDs = () => {
-  return Array.from(Object.keys(savedStructures));
-}
+const getAllStructureUUIDs = () => Array.from(Object.keys(savedStructures));
 
 const saveToFile = (uuid) => {
   // blockPalette
@@ -92,17 +88,14 @@ const saveToFile = (uuid) => {
 };
 
 const loadFromFile = () => {
-  
   // https://stackoverflow.com/a/10049704
-  fs.readdir("nbt_files", function(err, filenames) {
+  fs.readdir('nbt_files', (err, filenames) => {
     if (err) {
-      onError(err);
       return;
     }
-    filenames.forEach(function(filename) {
-      fs.readFile("nbt_files/" + filename, function(err, content) {
-        if (err) {
-          onError(err);
+    filenames.forEach((filename) => {
+      fs.readFile(`nbt_files/${filename}`, (err2, content) => {
+        if (err2) {
           return;
         }
 
@@ -112,20 +105,21 @@ const loadFromFile = () => {
           if (error) { throw error; }
 
           createNewStructure(uuid, data.value.size.value.value[0]);
-      
-          data.value.blocks.value.value.forEach(blockObj =>{
-            blockId = blockObj.state.value;
-            blockPos = blockObj.pos.value.value;
-            if(!savedStructures[uuid]){
+
+          data.value.blocks.value.value.forEach((blockObj) => {
+            const blockId = blockObj.state.value;
+            const blockPos = blockObj.pos.value.value;
+            if (!savedStructures[uuid]) {
               savedStructures[uuid] = [];
             }
-            if(!savedStructures[uuid][blockPos[0]]){
+            if (!savedStructures[uuid][blockPos[0]]) {
               savedStructures[uuid][blockPos[0]] = [];
             }
-            let blockName = "air";
-            for(let name of Object.keys(blockPalette)){
-              if(blockPalette[name] === blockId){
-                blockName = name;
+            let blockName = 'air';
+            const keys = Object.keys(blockPalette);
+            for (let index = 0; index < keys.length; index++) {
+              if (blockPalette[keys[index]] === blockId) {
+                blockName = keys[index];
                 break;
               }
             }
@@ -135,7 +129,7 @@ const loadFromFile = () => {
       });
     });
   });
-}
+};
 loadFromFile(); // load immediately at startup
 
 // set public modules
@@ -145,5 +139,5 @@ module.exports = {
   saveToFile,
   loadFromFile,
   getStructure,
-  getAllStructureUUIDs
+  getAllStructureUUIDs,
 };

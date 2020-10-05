@@ -1,6 +1,6 @@
-const database = require('./database.js');
 const { v4: uuidv4 } = require('uuid');
 const query = require('querystring');
+const database = require('./database.js');
 
 const respondJSON = (request, response, status, object) => {
   const headers = {
@@ -17,9 +17,9 @@ const respondJSONMeta = (request, response, status, headerInfo) => {
     'Content-Type': 'application/json',
   };
 
-  //https://stackoverflow.com/a/30871719
-  if(headerInfo){
-    const headersFinal = Object.assign({}, headers, headerInfo);
+  // https://stackoverflow.com/a/30871719
+  if (headerInfo) {
+    const headersFinal = { ...headers, ...headerInfo };
     response.writeHead(status, headersFinal);
     response.end();
     return;
@@ -29,64 +29,55 @@ const respondJSONMeta = (request, response, status, headerInfo) => {
   response.end();
 };
 
-
-
 const getNBTFile = (request, response, parsedUrl) => {
   const params = query.parse(parsedUrl.query);
-  if(params.uuid){
-
+  if (params.uuid) {
     let responseJSON = {
-      structureData: database.getStructure(params.uuid)
-    }
+      structureData: database.getStructure(params.uuid),
+    };
 
-    if(Object.keys(responseJSON.structureData).length !== 0){
+    if (Object.keys(responseJSON.structureData).length !== 0) {
       return respondJSON(request, response, 200, responseJSON);
     }
 
     responseJSON = {
-      message : "No file found with that uuid."
+      message: 'No file found with that uuid.',
     };
     return respondJSON(request, response, 404, responseJSON);
   }
-  else{
-    const responseJSON = {
-      message : "Please select a file to load."
-    };
-    return respondJSON(request, response, 400, responseJSON);
-  }
+
+  const responseJSON = {
+    message: 'Please select a file to load.',
+  };
+  return respondJSON(request, response, 400, responseJSON);
 };
 
-
 const getNBTFileMeta = (request, response, parsedUrl) => {
-  
   const params = query.parse(parsedUrl.query);
-  if(params.uuid){
+  if (params.uuid) {
     const structureObj = database.getStructure(params.uuid);
     let responseJSON = {
-      "X-structure-dimensions": `${structureObj.length}, ${structureObj[0].length}`
+      'X-structure-dimensions': `${structureObj.length}, ${structureObj[0].length}`,
     };
-    if(Object.keys(structureObj).length !== 0){
+    if (Object.keys(structureObj).length !== 0) {
       return respondJSONMeta(request, response, 200, responseJSON);
     }
 
     responseJSON = {
-      "X-database-error": "No file found with that uuid"
+      'X-database-error': 'No file found with that uuid',
     };
     return respondJSONMeta(request, response, 404, responseJSON);
   }
-  else{
-    const responseJSON = {
-      "X-database-error": "Please pass in a uuid for a file to search for."
-    };
-    respondJSONMeta(request, response, 400, responseJSON);
-  }
+
+  const responseJSON = {
+    'X-database-error': 'Please pass in a uuid for a file to search for.',
+  };
+  return respondJSONMeta(request, response, 400, responseJSON);
 };
-
-
 
 const getFileList = (request, response) => {
   const responseJSON = {
-    uuids: database.getAllStructureUUIDs()
+    uuids: database.getAllStructureUUIDs(),
   };
   return respondJSON(request, response, 200, responseJSON);
 };
@@ -94,12 +85,10 @@ const getFileList = (request, response) => {
 // returns only header
 const getFileListMeta = (request, response) => {
   const responseJSON = {
-    "X-files-avaliable": `${database.getAllStructureUUIDs().length}`
+    'X-files-avaliable': `${database.getAllStructureUUIDs().length}`,
   };
   respondJSONMeta(request, response, 201, responseJSON);
 };
-
-
 
 const notFound = (request, response) => {
   const responseJSON = {
@@ -115,8 +104,6 @@ const notFoundMeta = (request, response) => {
   respondJSONMeta(request, response, 404);
 };
 
-
-
 const saveToNBT = (request, response, body) => {
   const responseJSON = {
     message: 'Structure data required',
@@ -130,9 +117,9 @@ const saveToNBT = (request, response, body) => {
     responseJSON.id = 'missing size parameter';
     return respondJSON(request, response, 400, responseJSON);
   }
-  
+
   // new id for structure if no uuid is passed in
-  let uuid = uuidv4(); 
+  let uuid = uuidv4();
   if (body.uuid) {
     uuid = body.uuid;
   }
@@ -142,18 +129,17 @@ const saveToNBT = (request, response, body) => {
   if (database.createNewStructure(uuid, body.size)) {
     responseCode = 201;
   }
-  
+
   database.overwriteStructure(uuid, body.structureBlocks);
   database.saveToFile(uuid);
-
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully!';
     return respondJSON(request, response, responseCode, responseJSON);
   }
 
-  // No need to change message for updating as code 204 
-  // will automatically not return the response text 
+  // No need to change message for updating as code 204
+  // will automatically not return the response text
   return respondJSON(request, response, responseCode, responseJSON);
 };
 

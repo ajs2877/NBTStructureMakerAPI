@@ -10,13 +10,13 @@ const js = fs.readFileSync(`${__dirname}/../client/index.js`);
 const xhr = fs.readFileSync(`${__dirname}/../client/xhr.js`);
 const ui = fs.readFileSync(`${__dirname}/../client/ui.js`);
 const bricks = fs.readFileSync(`${__dirname}/../images/bricks.jpg`);
-const crying_obsidian = fs.readFileSync(`${__dirname}/../images/crying_obsidian.jpg`);
+const cryingObsidian = fs.readFileSync(`${__dirname}/../images/crying_obsidian.jpg`);
 const dirt = fs.readFileSync(`${__dirname}/../images/dirt.jpg`);
 const glass = fs.readFileSync(`${__dirname}/../images/glass.jpg`);
-const honeycomb_block = fs.readFileSync(`${__dirname}/../images/honeycomb_block.jpg`);
-const oak_planks = fs.readFileSync(`${__dirname}/../images/oak_planks.jpg`);
+const honeycombBlock = fs.readFileSync(`${__dirname}/../images/honeycomb_block.jpg`);
+const oakPlanks = fs.readFileSync(`${__dirname}/../images/oak_planks.jpg`);
 const prismarine = fs.readFileSync(`${__dirname}/../images/prismarine.jpg`);
-const stone_bricks = fs.readFileSync(`${__dirname}/../images/stone_bricks.jpg`);
+const stoneBricks = fs.readFileSync(`${__dirname}/../images/stone_bricks.jpg`);
 const stone = fs.readFileSync(`${__dirname}/../images/stone.jpg`);
 const air = fs.readFileSync(`${__dirname}/../images/air.jpg`);
 
@@ -27,13 +27,13 @@ const fileStruct = {
   '/xhr.js': { type: 'text/javascript', page: xhr },
   '/ui.js': { type: 'text/javascript', page: ui },
   '/images/bricks.jpg': { type: 'image/jpeg', page: bricks },
-  '/images/crying_obsidian.jpg': { type: 'image/jpeg', page: crying_obsidian },
+  '/images/crying_obsidian.jpg': { type: 'image/jpeg', page: cryingObsidian },
   '/images/dirt.jpg': { type: 'image/jpeg', page: dirt },
   '/images/glass.jpg': { type: 'image/jpeg', page: glass },
-  '/images/honeycomb_block.jpg': { type: 'image/jpeg', page: honeycomb_block },
-  '/images/oak_planks.jpg': { type: 'image/jpeg', page: oak_planks },
+  '/images/honeycomb_block.jpg': { type: 'image/jpeg', page: honeycombBlock },
+  '/images/oak_planks.jpg': { type: 'image/jpeg', page: oakPlanks },
   '/images/prismarine.jpg': { type: 'image/jpeg', page: prismarine },
-  '/images/stone_bricks.jpg': { type: 'image/jpeg', page: stone_bricks },
+  '/images/stone_bricks.jpg': { type: 'image/jpeg', page: stoneBricks },
   '/images/stone.jpg': { type: 'image/jpeg', page: stone },
   '/images/air.jpg': { type: 'image/jpeg', page: air },
 };
