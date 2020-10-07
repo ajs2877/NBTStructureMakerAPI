@@ -43,10 +43,10 @@ const fileStruct = {
 /**
  * Returns the page that clientside html is asking for.
  * Handles index page, css, js, images...
- * 
- * @param {*} request 
- * @param {*} response 
- * @param {*} parsedUrl 
+ *
+ * @param {*} request
+ * @param {*} response
+ * @param {*} parsedUrl
  */
 const getPage = (request, response, parsedUrl) => {
   const file = parsedUrl.pathname;

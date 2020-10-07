@@ -3,7 +3,7 @@ const query = require('querystring');
 const database = require('./database.js');
 
 /**
- * writes the header and sends the response to 
+ * writes the header and sends the response to
  * the user along with the JSON payload.
  * Use this for payload responses.
  */
@@ -96,18 +96,18 @@ const getNBTFileMeta = (request, response, parsedUrl) => {
  */
 const getFileList = (request, response) => {
   const responseJSON = {
-    uuids: database.getAllStructureUUIDs().filter(uuid => uuid !== "base_template"),
+    uuids: database.getAllStructureUUIDs().filter((uuid) => uuid !== 'base_template'),
   };
   return respondJSON(request, response, 200, responseJSON);
 };
 
 /**
- * Will return how many usable UUIDs there are 
+ * Will return how many usable UUIDs there are
  * minus the template file's through header.
  */
 const getFileListMeta = (request, response) => {
   const responseJSON = {
-    'X-files-avaliable': `${database.getAllStructureUUIDs().filter(uuid => uuid !== "base_template").length}`,
+    'X-files-avaliable': `${database.getAllStructureUUIDs().filter((uuid) => uuid !== 'base_template').length}`,
   };
   respondJSONMeta(request, response, 200, responseJSON);
 };
@@ -115,7 +115,7 @@ const getFileListMeta = (request, response) => {
 /**
  * Sneaky Little Hobbitses...
  * How did they get here???
- * 
+ *
  * Nevertheless, they just got 404'ed!
  */
 const notFound = (request, response) => {
@@ -130,7 +130,7 @@ const notFound = (request, response) => {
 /**
  * Sneaky Little Hobbitses...
  * How did they get here???
- * 
+ *
  * Nevertheless, they just got 404'ed!
  */
 const notFoundMeta = (request, response) => {

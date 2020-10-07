@@ -8,7 +8,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 /**
  * Used for saving user sent nbt data to server's local and file storage.
- * 
+ *
  * Must be declared above urlStruct or else urlStruct crashes.
  * Maybe this should be moved to jsonHandler...
  */

@@ -18,6 +18,10 @@ As for what can be better, absolutely everything lmao. I worked really hard on t
 
 - Perhaps find an API to have full list of Minecraft blocks and allow for greater selection? Would also mean I need to support block properties (like blocks facing certain directions) but that's VERY difficult to work with in nbt files.
 
+- Add a way for users to delete files maybe? Would mean we need to tie the nbt structures to be per users so people don't destroy other's work.
+
+- State the UUID of the file they just made.
+
 
 As for what is above and beyond, I think the block drawing feature is really cool and the ability to see all the avaliable nbt files saved on the server is nice. A ton of work was put into the grid on client side and the nbt reading/parsing on serverside. Furthermore, by having the nbt files stored as actual files, they persist between server restarts so it is kind of like an actual database instead of the temporary storage we were expected to do. Quite a bit of work was put into organizing good parts of the code to make it more legible for myself. Overall, just the interaction of the local data with the server and the client took up the bulk of my time but feels solid now. Just the extra features are needed to make it much more useful.
 

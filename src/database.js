@@ -6,11 +6,11 @@ nbt package: https://www.npmjs.com/package/nbt
 nbt package docs: http://sjmulder.github.io/nbt-js/
 */
 
-// Store the nbt data locally. Might be best to move it entirely to 
+// Store the nbt data locally. Might be best to move it entirely to
 // just be reading from and writing to actual files instead of loading to RAM.
 const savedStructures = {};
 
-// Block IDs to their numeric IDs. 
+// Block IDs to their numeric IDs.
 // Must match the palette in base_template.nbt file. (Use NBTExplorer to view the file)
 const blockPalette = {
   air: -1,
@@ -28,7 +28,7 @@ const blockPalette = {
 /**
  * Creates a new nbt data locally if one doesn't exist.
  * Otherwise, returns false to show failure to create.
- * 
+ *
  * @param {*} uuid file id
  * @param {*} size length of one side (assumed to be square)
  */
@@ -49,7 +49,7 @@ const createNewStructure = (uuid, size) => {
 /**
  * Helper method to turn an array into a 2D array for me.
  * Very useful!
- * 
+ *
  * https://stackoverflow.com/a/44946686
  */
 const TwoDimensional = (arr, size) => {
@@ -61,9 +61,9 @@ const TwoDimensional = (arr, size) => {
 /**
  * Will replace the local nbt data with the passed in one.
  * If the local data doesn't exist, returns false to signal failure to overwrite.
- * 
+ *
  * @param {*} uuid file id
- * @param {*} structureBlocks nbt data to save 
+ * @param {*} structureBlocks nbt data to save
  */
 const overwriteStructure = (uuid, structureBlocks) => {
   if (savedStructures[uuid]) {
@@ -76,7 +76,7 @@ const overwriteStructure = (uuid, structureBlocks) => {
 
 /**
  * Returns the nbt data if found. Otherwise, returns an empty object.
- * 
+ *
  * @param {*} uuid file id
  */
 const getStructure = (uuid) => {
@@ -88,21 +88,20 @@ const getStructure = (uuid) => {
 
 /**
  * Creates an array of all the local nbt data's UUIDs.
- * Note: base_template is also included. Filter it out afterwards if 
+ * Note: base_template is also included. Filter it out afterwards if
  * that file is to remain hidden from end users.
  */
 const getAllStructureUUIDs = () => Array.from(Object.keys(savedStructures));
 
 /**
- * Will save the specified local nbt data into an 
+ * Will save the specified local nbt data into an
  * actual nbt file that persists across server reloads.
- * 
- * @param {*} uuid file id 
+ *
+ * @param {*} uuid file id
  */
 const saveToFile = (uuid) => {
-
   const rawdata = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
-  
+
   // nbt package needed to read and write from nbt files.
   nbt.parse(rawdata, (error, data) => {
     if (error) { throw error; }
@@ -156,10 +155,10 @@ const loadFromFile = () => {
         nbt.parse(content, (error, data) => {
           if (error) { throw error; }
 
-          // Makes new blank nbt data array to fill after 
+          // Makes new blank nbt data array to fill after
           createNewStructure(uuid, data.value.size.value.value[0]);
 
-          // Mega cursed. Parses the nbt format to pull out 
+          // Mega cursed. Parses the nbt format to pull out
           // the block's numeric ID (we convert it to block name)
           // and get the position of the block.
           data.value.blocks.value.value.forEach((blockObj) => {
