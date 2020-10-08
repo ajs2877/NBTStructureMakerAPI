@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const nbt = require('nbt');
+const zlib = require('zlib');
 /*
 nbt package: https://www.npmjs.com/package/nbt
 nbt package docs: http://sjmulder.github.io/nbt-js/
@@ -75,7 +76,7 @@ const overwriteStructure = (uuid, structureBlocks) => {
 };
 
 /**
- * Returns the nbt data if found. Otherwise, returns an empty object.
+ * Returns the nbt data if found. Otherwise, returns undefined
  *
  * @param {*} uuid file id
  */
@@ -83,7 +84,7 @@ const getStructure = (uuid) => {
   if (savedStructures[uuid]) {
     return savedStructures[uuid];
   }
-  return {};
+  return undefined;
 };
 
 /**
@@ -92,6 +93,25 @@ const getStructure = (uuid) => {
  * that file is to remain hidden from end users.
  */
 const getAllStructureUUIDs = () => Array.from(Object.keys(savedStructures));
+
+/**
+ * Returns the actual file itself.
+ * Minecraft requires the file to be COMPRESSED AAAAAAAAAAAAAAA.
+ * After looking at how nbt package unzips the file, we now have to reverse that
+ * and send the user the compressed version so Minecraft will accept it.
+ *
+ * Ideally, I should make it so all files on server are compressed by
+ * default but I'm exhausted now lmao
+ */
+const returnNBTFile = (uuid) => {
+  try {
+    const file = fs.readFileSync(`nbt_files/${uuid}.nbt`, 'binary');
+    const zipped = zlib.gzipSync(file);
+    return { file: zipped, size: Buffer.byteLength(zipped) };
+  } catch (err) {
+    return undefined;
+  }
+};
 
 /**
  * Will save the specified local nbt data into an
@@ -201,4 +221,5 @@ module.exports = {
   loadFromFile,
   getStructure,
   getAllStructureUUIDs,
+  returnNBTFile,
 };

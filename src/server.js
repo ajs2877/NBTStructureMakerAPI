@@ -51,6 +51,7 @@ const urlStruct = {
     '/images/stone.jpg': htmlHandler.getPage,
     '/images/air.jpg': htmlHandler.getPage,
     '/getNBTFile': jsonHandler.getNBTFile,
+    '/getDownloadableNBTFile': jsonHandler.getDownloadableNBTFile,
     '/getFileList': jsonHandler.getFileList,
     notFound: jsonHandler.notFound,
   },
@@ -60,6 +61,7 @@ const urlStruct = {
   },
   HEAD: {
     '/getNBTFile': jsonHandler.getNBTFileMeta,
+    '/getDownloadableNBTFile': jsonHandler.getDownloadableNBTFileMeta,
     '/getFileList': jsonHandler.getFileListMeta,
     notFound: jsonHandler.notFound,
   },

@@ -8,6 +8,32 @@ import {setupGrid} from './ui.js';
 window.structureBlocks = [];
 
 /**
+ * Helper method to cause an automatic file download.
+ * Very useful! 
+ * 
+ * https://www.geeksforgeeks.org/how-to-trigger-a-file-download-when-clicking-an-html-button-or-javascript/
+ */
+function download(filename, content) { 
+              
+  //creating an invisible element 
+  var element = document.createElement('a'); 
+  element.setAttribute('href',  
+  'data:text/plain;charset=utf-8, ' 
+  + encodeURIComponent(content)); 
+  element.setAttribute('download', filename=".nbt"); 
+
+  // Above code is equivalent to 
+  // <a href="path of file" download="file name"> 
+
+  document.body.appendChild(element); 
+
+  //onClick property 
+  element.click(); 
+
+  document.body.removeChild(element); 
+} 
+
+/**
  * Parses the response from server and update the state of the
  * code on client side to be up to date on what happened serverside.
  */
@@ -61,11 +87,26 @@ const handleResponse = (xhr, parseResponse) => {
   if(msg){
     alert(msg);
   }
+  
+  if (xhr.getResponseHeader("Content-Type") === "application/octet-stream" && xhr.responseType === "arraybuffer") {
+    let link = document.createElement('a');
+    let blob = new Blob([xhr.response], {type: "application/octet-stream"});
+    //window.open(window.URL.createObjectURL(blob));
+
+    let url = window.URL.createObjectURL(blob);
+    link.href = url;
+    link.download = xhr.getResponseHeader('Content-Disposition').split('=')[1];
+    document.body.appendChild(link);
+    link.dispatchEvent(new MouseEvent(`click`, {bubbles: true, cancelable: true, view: window}));
+    setTimeout(function(){
+      document.body.removeChild(link);
+    }, 1);  
+  }
 };
 
 /**
  * using query params, this will ask the server to return the specified
- * file so we can update clientside to show the nbt file.
+ * file so we can update clientside to show or download the nbt file.
  * 
  * @param {*} e dom element activated
  */
@@ -75,14 +116,20 @@ const requestNBTFile = (e) => {
   if(file){
     //make a new AJAX request asynchronously
     const xhr = new XMLHttpRequest();
-    xhr.open("GET",`/getNBTFile?uuid=${file}`);
+    
+    //needed to parse the response as binary easily
+    if(e.target.value === "getDownloadableNBTFile"){
+      xhr.responseType = "arraybuffer";
+    }
+
+    xhr.open("GET",`/${e.target.value}?uuid=${file}`); // The button stores what the request is
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.onload = () => handleResponse(xhr, true);
     xhr.send();
     e.preventDefault();
   }
   else{
-    alert("No file was selected to load.");
+    alert("No file was selected to get from the server.");
   }
 
   return false;
@@ -150,6 +197,7 @@ const sendNBTData = (e) => {
 const init = () => {
   document.querySelector("#saveButton").addEventListener('click', sendNBTData);
   document.querySelector("#loadButton").addEventListener('click', requestNBTFile);
+  document.querySelector("#downloadButton").addEventListener('click', requestNBTFile);
   setupMain();
   getAllNBTFiles();
 };

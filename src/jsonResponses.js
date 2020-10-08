@@ -38,6 +38,71 @@ const respondJSONMeta = (request, response, status, headerInfo) => {
 };
 
 /**
+ * Using the passed in UUID by query param,
+ * will return the actual nbt file itself.
+ */
+const getDownloadableNBTFile = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
+  if (params.uuid) {
+    const file = database.returnNBTFile(params.uuid);
+
+    if (file) {
+      // Sending a full file to user: https://stackoverflow.com/a/21578563
+      response.setHeader('Content-Length', file.size);
+      response.setHeader('Content-Type', 'application/octet-stream'); // binary data MIME type: https://stackoverflow.com/a/6783972
+      response.setHeader('Content-Disposition', `attachment; filename=${params.uuid}.nbt`);
+      response.write(file.file, 'binary');
+      response.end();
+      return;
+    }
+
+    const responseJSON = {
+      message: 'No file found with that uuid.',
+    };
+
+    respondJSON(request, response, 404, responseJSON);
+    return;
+  }
+
+  const responseJSON = {
+    message: 'Please select a file to load.',
+  };
+
+  respondJSON(request, response, 400, responseJSON);
+};
+
+/**
+ * Using the passed in UUID by query param,
+ * will return the size of the nbt file by header.
+ */
+const getDownloadableNBTFileMeta = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
+  let responseJSON = {};
+
+  if (params.uuid) {
+    const file = database.returnNBTFile(params.uuid);
+
+    if (file) {
+      responseJSON = {
+        'X-file-size': `${file.size}`,
+      };
+
+      return respondJSONMeta(request, response, 200, responseJSON);
+    }
+
+    responseJSON = {
+      'X-database-error': 'No file found with that uuid',
+    };
+    return respondJSONMeta(request, response, 404, responseJSON);
+  }
+
+  responseJSON = {
+    'X-database-error': 'Please pass in a uuid for a file to search for.',
+  };
+  return respondJSONMeta(request, response, 400, responseJSON);
+};
+
+/**
  * Using the passed in UUID by query param, crafts and
  * sends back the nbt data in a response.
  */
@@ -48,7 +113,7 @@ const getNBTFile = (request, response, parsedUrl) => {
       structureData: database.getStructure(params.uuid),
     };
 
-    if (Object.keys(responseJSON.structureData).length !== 0) {
+    if (responseJSON.structureData) {
       return respondJSON(request, response, 200, responseJSON);
     }
 
@@ -75,7 +140,7 @@ const getNBTFileMeta = (request, response, parsedUrl) => {
     let responseJSON = {
       'X-structure-dimensions': `${structureObj.length}, ${structureObj[0].length}`,
     };
-    if (Object.keys(structureObj).length !== 0) {
+    if (structureObj) {
       return respondJSONMeta(request, response, 200, responseJSON);
     }
 
@@ -189,6 +254,8 @@ module.exports = {
   getNBTFileMeta,
   getFileList,
   getFileListMeta,
+  getDownloadableNBTFile,
+  getDownloadableNBTFileMeta,
   notFound,
   notFoundMeta,
   saveToNBT,
