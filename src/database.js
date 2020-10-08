@@ -69,7 +69,8 @@ const TwoDimensional = (arr, size) => {
 const overwriteStructure = (uuid, structureBlocks) => {
   if (savedStructures[uuid]) {
     const blockArray = structureBlocks.split(',');
-    savedStructures[uuid] = TwoDimensional(blockArray, Math.sqrt(blockArray.length));
+    let dimension = Math.sqrt(blockArray.length);
+    savedStructures[uuid] = TwoDimensional(blockArray, dimension);
     return true;
   }
   return false;
