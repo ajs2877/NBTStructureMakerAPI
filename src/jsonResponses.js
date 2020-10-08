@@ -239,7 +239,7 @@ const saveToNBT = (request, response, body) => {
   database.saveToFile(uuid);
 
   if (responseCode === 201) {
-    responseJSON.message = 'Created Successfully!';
+    responseJSON.message = `Created Successfully! File is called: ${uuid}`;
     return respondJSON(request, response, responseCode, responseJSON);
   }
 

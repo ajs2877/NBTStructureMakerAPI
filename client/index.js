@@ -7,31 +7,6 @@ import {setupGrid} from './ui.js';
 // Hold info of the structure itself as a 2d array rright now.
 window.structureBlocks = [];
 
-/**
- * Helper method to cause an automatic file download.
- * Very useful! 
- * 
- * https://www.geeksforgeeks.org/how-to-trigger-a-file-download-when-clicking-an-html-button-or-javascript/
- */
-function download(filename, content) { 
-              
-  //creating an invisible element 
-  var element = document.createElement('a'); 
-  element.setAttribute('href',  
-  'data:text/plain;charset=utf-8, ' 
-  + encodeURIComponent(content)); 
-  element.setAttribute('download', filename=".nbt"); 
-
-  // Above code is equivalent to 
-  // <a href="path of file" download="file name"> 
-
-  document.body.appendChild(element); 
-
-  //onClick property 
-  element.click(); 
-
-  document.body.removeChild(element); 
-} 
 
 /**
  * Parses the response from server and update the state of the
@@ -88,10 +63,13 @@ const handleResponse = (xhr, parseResponse) => {
     alert(msg);
   }
   
+  // How to download blobs safely on any browser. 
+  // The setTimeout is needed for FireFox because
+  // FireFox just has to be special...
+  // Source: https://stackoverflow.com/a/48968694
   if (xhr.getResponseHeader("Content-Type") === "application/octet-stream" && xhr.responseType === "arraybuffer") {
     let link = document.createElement('a');
     let blob = new Blob([xhr.response], {type: "application/octet-stream"});
-    //window.open(window.URL.createObjectURL(blob));
 
     let url = window.URL.createObjectURL(blob);
     link.href = url;
