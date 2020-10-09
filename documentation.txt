@@ -4,7 +4,7 @@ In Minecraft, you can place blocks to build all kinds of stuff. With a special b
 
 Thus, the purposed of this site is to allow a quick way for someone to make nbt files when they don't have access to Minecraft.
 
-The API for the site handles sending/recieving objects that will be converted to nbt files on the server and it also allows the user to see and load up any saved nbt file on the server. Furthermore, user can download the nbt file and spawn the build in the game!
+The API for the site handles sending/recieving objects that will be converted to nbt files on the server and it also allows the user to see and load up any saved nbt file on the server. Furthermore, user can download the nbt file and spawn the build in the game! And the admin can delete files from the server with a password protected button. The password is filament34F@ btw.
 
 So far, things are looking good for the app. I did have issues with a strange bug where the grid of blocks with change size randomly when saving and loading from the same nbt file. Turns out I was not setting the size entry properly in my post request lol. The nbt parsing was quite a handful but wasn't too bad to get through and works great in the end. getting the downloading to work was a massive pain as window.open(blobUrl) does not let me change the file name downloaded. And when I switched to using an invisible link element that lets me download the blob of data as a file, my pop-up blocker was redirecting me to apage that says "page not found" instead of letting me download. It took me a while to figure out it was the pop-up blocker killing me! Then I found out the nbt package automatically unzips the nbt files and Minecraft will not read it if unzipped. So I had to reverse engineer the nbt package on their GitHub source and figure out how to rezip the nbt data when sent to client so Minecraft will accept it. 
 
@@ -17,8 +17,6 @@ As for what can be better, absolutely everything lmao. I worked really hard on t
 - Allow changing of size so people could make 48x48 builds.
 
 - Perhaps find an API to have full list of Minecraft blocks and allow for greater selection? Would also mean I need to support block properties (like blocks facing certain directions) but that's VERY difficult to work with in nbt files.
-
-- Add a way for users to delete files maybe? Would mean we need to tie the nbt structures to be per users so people don't destroy other's work. This can be a perfect project 2 change.
 
 
 As for what is above and beyond, I think the block drawing feature is really cool and the ability to see all the avaliable nbt files saved on the server is nice. A ton of work was put into the grid on client side and the nbt reading/parsing on serverside. Furthermore, by having the nbt files stored as actual files, they persist between server restarts so it is kind of like an actual database instead of the temporary storage we were expected to do. Quite a bit of work was put into organizing good parts of the code to make it more legible for myself. Overall, just the interaction of the local data with the server and the client took up the bulk of my time but feels solid now. Just the extra features are needed to make it much more useful. And of course, sending the actual nbt file to the user and letting them download it. That's hard and really above and beyond!
@@ -33,7 +31,11 @@ API endpoints
   /getFileList 
     - gets the UUID of all nbt files saved on server.
   /getDownloadableNBTFile
+    - ?uuid=___ 
     - returns the entire nbt file as a compressed buffer of binary data.
+  /deleteFile
+    - ?uuid=___&password=___
+    - Will delete the file from the server if given password of filament34F@
 
  HEAD
   /getNBTFile 
@@ -42,7 +44,11 @@ API endpoints
   /getFileList 
     - gets the number of nbt files on the server as a header response. 
   /getDownloadableNBTFile
+    - ?uuid=___ 
     - returns the size of the compressed binary buffer in bytes.
+  /deleteFile
+    - ?uuid=___&password=___
+    - Will check if the file can be deleted from the server if given password of filament34F@
 
  POST
   /saveNBT 
