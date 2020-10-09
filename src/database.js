@@ -69,7 +69,7 @@ const TwoDimensional = (arr, size) => {
 const overwriteStructure = (uuid, structureBlocks) => {
   if (savedStructures[uuid]) {
     const blockArray = structureBlocks.split(',');
-    let dimension = Math.sqrt(blockArray.length);
+    const dimension = Math.sqrt(blockArray.length);
     savedStructures[uuid] = TwoDimensional(blockArray, dimension);
     return true;
   }
@@ -214,6 +214,21 @@ const loadFromFile = () => {
 };
 loadFromFile(); // load immediately at startup
 
+/**
+ * Will delete the file and clear it from local memory as well.
+ * Returns true if the operation succeeded and false otherwise.
+ */
+const deleteFile = (uuid) => {
+  try {
+    delete savedStructures[uuid];
+    fs.unlinkSync(`nbt_files/${uuid}.nbt`);
+    console.log(`successfully deleted: nbt_files/${uuid}.nbt`);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 // set public modules
 module.exports = {
   createNewStructure,
@@ -223,4 +238,5 @@ module.exports = {
   getStructure,
   getAllStructureUUIDs,
   returnNBTFile,
+  deleteFile,
 };

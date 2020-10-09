@@ -2,6 +2,8 @@ const { v4: uuidv4 } = require('uuid');
 const query = require('querystring');
 const database = require('./database.js');
 
+const adminPassword = 'filament34F@';
+
 /**
  * writes the header and sends the response to
  * the user along with the JSON payload.
@@ -178,6 +180,75 @@ const getFileListMeta = (request, response) => {
 };
 
 /**
+ * Will attempt to delete the file from the server if the
+ * password provided is accepted.
+ */
+const deleteFile = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
+  let responseJSON;
+
+  if (params.password === adminPassword) {
+    if (params.uuid) {
+      if (database.deleteFile(params.uuid)) {
+        responseJSON = {
+          message: `${params.uuid}.nbt has been successfully deleted.`,
+          // force client to refresh their file list cache
+          uuids: database.getAllStructureUUIDs().filter((uuid) => uuid !== 'base_template'),
+        };
+
+        return respondJSON(request, response, 200, responseJSON);
+      }
+
+      responseJSON = {
+        message: `Unable to find ${params.uuid}.nbt on the server.`,
+      };
+      return respondJSON(request, response, 404, responseJSON);
+    }
+
+    responseJSON = {
+      message: 'UUID is missing from request.',
+    };
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  responseJSON = {
+    message: 'Incorrect password. Request denied.',
+  };
+  return respondJSON(request, response, 401, responseJSON);
+};
+
+const deleteFileMeta = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
+  let responseJSON;
+
+  if (params.password === adminPassword) {
+    if (params.uuid) {
+      if (database.getStructure(params.uuid)) {
+        responseJSON = {
+          'X-deletable-status': `${params.uuid}.nbt is present and can be deleted from the server.`,
+        };
+        return respondJSONMeta(request, response, 200, responseJSON);
+      }
+
+      responseJSON = {
+        'X-deletable-status': `${params.uuid}.nbt is unabled to be found.`,
+      };
+      return respondJSONMeta(request, response, 404, responseJSON);
+    }
+
+    responseJSON = {
+      'X-deletable-status': 'UUID is missing from request.',
+    };
+    return respondJSONMeta(request, response, 400, responseJSON);
+  }
+
+  responseJSON = {
+    'X-deletable-status': 'Incorrect password. Request denied.',
+  };
+  return respondJSONMeta(request, response, 401, responseJSON);
+};
+
+/**
  * Sneaky Little Hobbitses...
  * How did they get here???
  *
@@ -258,5 +329,7 @@ module.exports = {
   getDownloadableNBTFileMeta,
   notFound,
   notFoundMeta,
+  deleteFile,
+  deleteFileMeta,
   saveToNBT,
 };

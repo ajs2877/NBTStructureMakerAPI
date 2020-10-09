@@ -53,6 +53,7 @@ const urlStruct = {
     '/getNBTFile': jsonHandler.getNBTFile,
     '/getDownloadableNBTFile': jsonHandler.getDownloadableNBTFile,
     '/getFileList': jsonHandler.getFileList,
+    '/deleteFile': jsonHandler.deleteFile,
     notFound: jsonHandler.notFound,
   },
   POST: {
@@ -63,6 +64,7 @@ const urlStruct = {
     '/getNBTFile': jsonHandler.getNBTFileMeta,
     '/getDownloadableNBTFile': jsonHandler.getDownloadableNBTFileMeta,
     '/getFileList': jsonHandler.getFileListMeta,
+    '/deleteFile': jsonHandler.deleteFileMeta,
     notFound: jsonHandler.notFound,
   },
   notFound: jsonHandler.notFound,

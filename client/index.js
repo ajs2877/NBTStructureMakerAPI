@@ -88,7 +88,7 @@ const handleResponse = (xhr, parseResponse) => {
  * 
  * @param {*} e dom element activated
  */
-const requestNBTFile = (e) => {
+const requestNBTFile = (e, extraParams) => {
   const file = document.querySelector("#files").value;
 
   if(file){
@@ -100,7 +100,13 @@ const requestNBTFile = (e) => {
       xhr.responseType = "arraybuffer";
     }
 
-    xhr.open("GET",`/${e.target.value}?uuid=${file}`); // The button stores what the request is
+    // The button stores what the request is
+    let params = `/${e.target.value}?uuid=${file}`;
+    if(extraParams){
+      params = params + extraParams;
+    }
+
+    xhr.open("GET", params); 
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.onload = () => handleResponse(xhr, true);
     xhr.send();
@@ -112,6 +118,15 @@ const requestNBTFile = (e) => {
 
   return false;
 };
+
+/**
+ * Is for any admin acton that requires prompting and passing
+ * a password onto the server in the request. 
+ */
+const adminPasswordedRequest = (e) => {
+  let password = prompt("Please enter the admin password");
+  requestNBTFile(e, `&password=${password}`);
+}
 
 /**
  * Will retrieve the list of all uuids of all nbt files on the server.
@@ -176,6 +191,7 @@ const init = () => {
   document.querySelector("#saveButton").addEventListener('click', sendNBTData);
   document.querySelector("#loadButton").addEventListener('click', requestNBTFile);
   document.querySelector("#downloadButton").addEventListener('click', requestNBTFile);
+  document.querySelector("#deleteButton").addEventListener('click', adminPasswordedRequest);
   setupMain();
   getAllNBTFiles();
 };
