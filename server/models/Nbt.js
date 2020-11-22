@@ -22,7 +22,7 @@ const NbtSchema = new mongoose.Schema({
     required: true,
   },
   data: [{
-    type: String
+    type: String,
   }],
   owner: {
     type: mongoose.Schema.ObjectId,
@@ -57,7 +57,6 @@ NbtSchema.statics.returnDataForOwner = (ownerId, nameIn, callback) => {
 
   return NbtModel.find(search).select('size data').lean().exec(callback);
 };
-
 
 NbtModel = mongoose.model('Nbt', NbtSchema);
 

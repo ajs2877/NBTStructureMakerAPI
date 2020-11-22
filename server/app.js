@@ -16,8 +16,8 @@ const redis = require('redis');
 // loaded from the local .env file
 const port = process.env.PORT || process.env.NODE_PORT;
 const dbURL = process.env.MONGODB_URI;
-const secret = process.env.SECRET; 
-const redisPassword = process.env.REDIS_PASSWORD; 
+const secret = process.env.SECRET;
+const redisPassword = process.env.REDIS_PASSWORD;
 
 const mongooseOptions = {
   useNewUrlParser: true,
@@ -64,7 +64,7 @@ app.use(session({
   store: new RedisStore({
     client: redisClient,
   }),
-  secret: secret,
+  secret,
   resave: true,
   saveUninitialized: true,
   cookie: {
