@@ -32,39 +32,39 @@ img{
 }
 
 .air {
-  background-image: url("/images/air.jpg");
+  background-image: url("/assets/img/air.jpg");
 }
 
 .dirt {
-  background-image: url("/images/dirt.jpg");
+  background-image: url("/assets/img/dirt.jpg");
 }
 
 .stone {
-  background-image: url("/images/stone.jpg");
+  background-image: url("/assets/img/stone.jpg");
 }
 
 .oak_planks {
-  background-image: url("/images/oak_planks.jpg");
+  background-image: url("/assets/img/oak_planks.jpg");
 }
 
 .glass {
-  background-image: url("/images/glass.jpg");
+  background-image: url("/assets/img/glass.jpg");
 }
 
 .bricks {
-  background-image: url("/images/bricks.jpg");
+  background-image: url("/assets/img/bricks.jpg");
 }
 
 .prismarine {
-  background-image: url("/images/prismarine.jpg");
+  background-image: url("/assets/img/prismarine.jpg");
 }
 
 .crying_obsidian {
-  background-image: url("/images/crying_obsidian.jpg");
+  background-image: url("/assets/img/crying_obsidian.jpg");
 }
 
 .honeycomb_block {
-  background-image: url("/images/honeycomb_block.jpg");
+  background-image: url("/assets/img/honeycomb_block.jpg");
 }
 
 .inline{

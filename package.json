@@ -1,5 +1,5 @@
 {
-  "name": "http-api-assignment-ii",
+  "name": "nbtstructuremakerapi",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,29 +8,52 @@
     "npm": "6.14.8"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
+    "express-session": "^1.17.0",
+    "helmet": "^3.21.3",
+    "mongoose": "^5.9.5",
     "nbt": "^0.8.1",
+    "redis": "^3.0.2",
+    "serve-favicon": "^2.5.0",
+    "underscore": "^1.9.2",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-react": "^7.12.1",
     "eslint": "^7.9.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-import": "^2.22.0",
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "start": "node ./src/server.js",
-    "pretest": "eslint ./src --fix",
-    "test": "echo \"Tests complete\"",
-    "nodemon": "nodemon -e js,html,css --watch ./src --watch ./client ./src/server.js"
+    "buildLoginBundle": "babel ./client/login ./client/helper --presets @babel/preset-react --out-file ./hosted/loginBundle.js",
+    "buildAppBundle": "babel ./client/app ./client/helper --presets @babel/preset-react --out-file ./hosted/bundle.js",
+    "build": "npm run buildLoginBundle && npm run buildAppBundle",
+    "watchLoginBundle": "babel --watch ./client/login ./client/helper --presets @babel/preset-react --out-file ./hosted/loginBundle.js",
+    "watchAppBundle": "babel --watch ./client/app ./client/helper --presets @babel/preset-react --out-file ./hosted/bundle.js",
+    "nodemon": "nodemon --watch ./server ./server/app.js",
+    "start": "node ./server/app.js",
+    "pretest": "eslint ./server --fix",
+    "test": "echo \"Tests complete\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ajs2877/http-api-assignment-ii.git"
+    "url": "git+https://github.com/ajs2877/NBTStructureMakerAPI.git"
   },
   "author": "Alex Sarnese",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ajs2877/http-api-assignment-ii/issues"
+    "url": "https://github.com/ajs2877/NBTStructureMakerAPI/issues"
   },
-  "homepage": "https://github.com/ajs2877/http-api-assignment-ii#readme"
+  "homepage": "https://github.com/ajs2877/NBTStructureMakerAPI#readme"
 }

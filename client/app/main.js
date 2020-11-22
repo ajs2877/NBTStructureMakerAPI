@@ -1,7 +1,3 @@
-"use strict";
-import createXHR from './xhr.js';
-import {setupMain} from './ui.js';
-import {setupGrid} from './ui.js';
 
 // Set global as this is needed to be setup by ui
 // Hold info of the structure itself as a 2d array rright now.
@@ -35,7 +31,7 @@ const handleResponse = (xhr, parseResponse) => {
       msg = obj.message;
     }
 
-    if(obj.uuids){
+    if(obj.filename){
       let fileElement = document.querySelector("#files");
 
       // remove all entries except for the 'no file selected' option
@@ -44,10 +40,10 @@ const handleResponse = (xhr, parseResponse) => {
       }
 
       // re-add all files as an option so now the list is up to date
-      obj.uuids.forEach(uuid =>{
+      obj.filename.forEach(filename =>{
         var optionElement = document.createElement("option");
-        optionElement.value = uuid;
-        optionElement.text = uuid;
+        optionElement.value = filename;
+        optionElement.text = filename;
         fileElement.appendChild(optionElement);
       });
     }
@@ -88,7 +84,7 @@ const handleResponse = (xhr, parseResponse) => {
  * 
  * @param {*} e dom element activated
  */
-const requestNBTFile = (e, extraParams) => {
+const requestNBTFile = (e) => {
   const file = document.querySelector("#files").value;
 
   if(file){
@@ -101,12 +97,9 @@ const requestNBTFile = (e, extraParams) => {
     }
 
     // The button stores what the request is
-    let params = `/${e.target.value}?uuid=${file}`;
-    if(extraParams){
-      params = params + extraParams;
-    }
+    let params = `/${e.target.value}?uuid=${file}&_csrf=${document.querySelector("#_csrfhidden").value}`;
 
-    xhr.open("GET", params); 
+    xhr.open(e.target.getAttribute("data-request-type"), params); 
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.onload = () => handleResponse(xhr, true);
     xhr.send();
@@ -120,24 +113,30 @@ const requestNBTFile = (e, extraParams) => {
 };
 
 /**
- * Is for any admin acton that requires prompting and passing
- * a password onto the server in the request. 
- */
-const adminPasswordedRequest = (e) => {
-  let password = prompt("Please enter the admin password");
-  requestNBTFile(e, `&password=${password}`);
-}
-
-/**
  * Will retrieve the list of all uuids of all nbt files on the server.
  */
 const getAllNBTFiles = () => {
-  //make a new AJAX request asynchronously
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET","/getFileList");
-  xhr.setRequestHeader('Accept', 'application/json');
-  xhr.onload = () => handleResponse(xhr, true);
-  xhr.send();
+
+  sendAjax('GET', `/getFileList?_csrf=${document.querySelector("#_csrfhidden").value}`, null, (data) => {
+    // ReactDOM.render(
+    //     <DomoList domos={data.domos} />, document.querySelector("#domos")
+    // );
+    
+    let fileElement = document.querySelector("#files");
+
+    // remove all entries except for the 'no file selected' option
+    while (fileElement.lastChild.value) {
+      fileElement.removeChild(fileElement.lastChild);
+    }
+
+    // re-add all files as an option so now the list is up to date
+    data.nbts.forEach(entry =>{
+      var optionElement = document.createElement("option");
+      optionElement.value = entry.filename;
+      optionElement.text = entry.filename;
+      fileElement.appendChild(optionElement);
+    });
+  });
 
   return false;
 };
@@ -151,12 +150,15 @@ const getAllNBTFiles = () => {
 const sendNBTData = (e) => {
   const payload = {
       structureBlocks: window.structureBlocks,
-      size: window.structureBlocks[0]
+      size: window.structureBlocks[0].length
   };
   
   const file = document.querySelector("#files").value;
   if(file){
-    payload.uuid = file; // a file to save to was selected
+    payload.filename = file; // a file to save to was selected
+  }
+  else{
+    payload.filename = prompt("Enter a name for your build!");
   }
 
   // Format the data.
@@ -170,7 +172,7 @@ const sendNBTData = (e) => {
 
   // Setup the post request and zooom. To the server it goes
   const info = {
-      action: "/saveNBT",
+      action: `/saveNBT?_csrf=${document.querySelector("#_csrfhidden").value}`,
       method: "POST" 
     };
   const xhrObj = createXHR(info, {
@@ -183,16 +185,49 @@ const sendNBTData = (e) => {
   return false;
 };
 
-/**
- * Sets up the entire page on clientside when the page is first loaded.
- * This includes hooking up event listeners, showing a blank grid, and listing all uuids.
- */
-const init = () => {
+    
+const TopSection = (props) => { 
+  // Multi layered jigsaws can be a future add-on to this project
+  //  <div class="layerControls">
+  //    <button id="downbutton">Down</button>
+  //    Layer <span id="currentLayer">1</span>/<span id="totalLayers">9</span>
+  //    <button id="upbutton">Up</button>
+  //  </div>
+  return (
+    <div>
+      <h1>NBT Structure Maker API</h1>
+      <input type="hidden" name="_csrf" id="_csrfhidden" value={props.csrf} />
+      <div className="navlink"><a href="/logout">Log out</a></div>
+      <select id="files">
+        <option value="">Create New File</option>
+      </select>
+      <button id="saveButton">Save NBT</button>
+      <button id="loadButton" value="getNBTFile" data-request-type="GET">Load NBT File</button>
+      <button id="downloadButton" value="getDownloadableNBTFile" data-request-type="GET">Download selected NBT File</button>
+      <button id="deleteButton" value="deleteFile" data-request-type="DELETE">Delete selected NBT File</button>
+    </div>
+  );
+};
+
+var setup = function(csrf) {
+  ReactDOM.render(
+    <TopSection csrf={csrf}/>, document.querySelector("#topSection")
+  );
   document.querySelector("#saveButton").addEventListener('click', sendNBTData);
   document.querySelector("#loadButton").addEventListener('click', requestNBTFile);
   document.querySelector("#downloadButton").addEventListener('click', requestNBTFile);
-  document.querySelector("#deleteButton").addEventListener('click', adminPasswordedRequest);
-  setupMain();
+  document.querySelector("#deleteButton").addEventListener('click', requestNBTFile);
+  setupControls();
+  setupGrid();
   getAllNBTFiles();
 };
-window.onload = init;
+
+var getToken = () => {
+    sendAjax('GET', '/getToken', null, (result) => {
+        setup(result.csrfToken);
+    });
+};
+
+$(document).ready(function() {
+    getToken();
+});

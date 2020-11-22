@@ -1,4 +1,4 @@
-"use strict";
+
 
 let defaultSize = 10;
 let currentBlock = "dirt";
@@ -32,9 +32,9 @@ const changeBlockSelected = (e) => {
  * Attachs changeBlockSelected to all radio buttons so clicking any button
  * will swap the user's block to the radio button's value (which is a block)
  */
-function setupControls(){
+const setupControls = () => {
   //https://www.techiedelight.com/bind-change-event-handler-radio-button-javascript/
-  var radios = document.querySelectorAll('input[type=radio][name="blockRadio"]');
+  const radios = document.querySelectorAll('input[type=radio][name="blockRadio"]');
   radios.forEach(radio => radio.addEventListener('change', (e) => changeBlockSelected(e)));
 };
 
@@ -42,10 +42,8 @@ function setupControls(){
  * Wipes and re-creates the grid of air blocks.
  * If nbt data is passed in instead, it will make
  * the grid show the contents of the nbt data.
- * 
- * @param {*} structureData the nbt data from the server
  */
-export function setupGrid(structureData){
+const setupGrid = (structureData) => {
   let xSize = defaultSize; 
   let zSize = defaultSize;
   window.structureBlocks = [];
@@ -101,12 +99,4 @@ export function setupGrid(structureData){
 
     document.body.appendChild(row);
   };
-};
-
-/**
- * Calls the need functions at startup to make the controls and grid.
- */
-export function setupMain(){
-  setupControls();
-  setupGrid();
 };

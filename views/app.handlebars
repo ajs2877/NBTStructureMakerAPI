@@ -1,28 +1,18 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="utf-8"/>
   <title>NBT Structure Maker API</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="/style.css">
-  <script type="module" src="/index.js"></script>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
+  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body>
-  <section id="top">
-    <!-- Multi layered jigsaws can be a future add-on to this project
-      <div class="layerControls">
-        <button id="downbutton">Down</button>
-        Layer <span id="currentLayer">1</span>/<span id="totalLayers">9</span>
-        <button id="upbutton">Up</button>
-      </div>
-    -->
-    <h1>NBT Structure Maker API</h1>
-    <select id="files">
-      <option value="">Create New File</option>
-    </select>
-    <button id="saveButton">Save NBT</button>
-    <button id="loadButton" value="getNBTFile">Load NBT File</button>
-    <button id="downloadButton" value="getDownloadableNBTFile">Download selected NBT File</button>
-    <button id="deleteButton" value="deleteFile">Delete selected NBT File</button>
+  <section id="topSection">
   </section>
   <section id="blockSelector">
     <div class="button">
@@ -30,7 +20,7 @@
         <h3>Dirt</h3>
         <label>
           <input type="radio" name="blockRadio" value="dirt" checked/>
-          <img src="/images/dirt.jpg">
+          <img src="../assets/img/dirt.jpg">
         </label>
       </div>
 
@@ -38,7 +28,7 @@
         <h3>Stone</h3>
         <label>
           <input type="radio" name="blockRadio" value="stone"/>
-          <img src="/images/stone.jpg">
+          <img src="../assets/img/stone.jpg">
         </label>
       </div>
       
@@ -46,7 +36,7 @@
         <h3>Oak<br>Planks</h3>
         <label>
           <input type="radio" name="blockRadio" value="oak_planks"/>
-          <img src="/images/oak_planks.jpg">
+          <img src="../assets/img/oak_planks.jpg">
         </label>
       </div>
       
@@ -54,7 +44,7 @@
         <h3>Glass</h3>
         <label>
           <input type="radio" name="blockRadio" value="glass"/>
-          <img src="/images/glass.jpg">
+          <img src="../assets/img/glass.jpg">
         </label>
       </div>
       
@@ -62,7 +52,7 @@
         <h3>Bricks</h3>
         <label>
           <input type="radio" name="blockRadio" value="bricks"/>
-          <img src="/images/bricks.jpg">
+          <img src="../assets/img/bricks.jpg">
         </label>
       </div>
       
@@ -70,7 +60,7 @@
         <h3>Prismarine</h3>
         <label>
           <input type="radio" name="blockRadio" value="prismarine"/>
-          <img src="/images/prismarine.jpg">
+          <img src="../assets/img/prismarine.jpg">
         </label>
       </div>
       
@@ -78,7 +68,7 @@
         <h3>Crying<br>Obsidian</h3>
         <label>
           <input type="radio" name="blockRadio" value="crying_obsidian"/>
-          <img src="/images/crying_obsidian.jpg">
+          <img src="../assets/img/crying_obsidian.jpg">
         </label>
       </div>
       
@@ -86,7 +76,7 @@
         <h3>Honeycomb<br>Block</h3>
         <label>
           <input type="radio" name="blockRadio" value="honeycomb_block"/>
-          <img src="/images/honeycomb_block.jpg">
+          <img src="../assets/img/honeycomb_block.jpg">
         </label>
       </div>
       
@@ -94,10 +84,11 @@
         <h3>Air</h3>
         <label>
           <input type="radio" name="blockRadio" value="air"/>
-          <img src="/images/air.jpg">
+          <img src="../assets/img/air.jpg">
         </label>
       </div>
     </div>
   </section>
+  <script src="/assets/bundle.js"></script>
 </body>
 </html>
