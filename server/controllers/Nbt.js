@@ -73,22 +73,16 @@ const getDownloadableNBTFile = (req, res) => Nbt.NbtModel.returnAllDataNamesForO
   },
 );
 
-const deleteNbt = (req, res) => Nbt.NbtModel.returnAllDataNamesForOwner(
+const deleteNbt = (req, res) => Nbt.NbtModel.deleteFileFromowner(
   req.session.account._id,
-  (err) => {
-    if (err) {
-      console.log(err);
+  req.query.nbt_file, 
+  (err2) => {
+    if (err2) {
+      console.log(err2);
       return res.status(400).json({ error: 'An error occurred' });
     }
-
-    return Nbt.NbtModel.deleteOne({ name: req.body.nbt_name }, (err2) => {
-      if (err2) {
-        console.log(err2);
-        return res.status(400).json({ error: 'An error occurred' });
-      }
-      return res.json({ action: 'success!' });
-    });
-  },
+    return res.json({ action: 'success!', task: "delete" });
+  }
 );
 
 const getNBTFile = () => {

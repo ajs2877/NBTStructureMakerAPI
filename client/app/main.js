@@ -25,32 +25,39 @@ const handleResponse = (xhr, parseResponse) => {
         break;
   }
   
-  if(parseResponse && xhr.response && xhr.getResponseHeader('Content-Type') === 'application/json') {
+  if(parseResponse && xhr.response) {
     const obj = JSON.parse(xhr.response);
     if(obj.message){
       msg = obj.message;
     }
 
-    if(obj.filename){
-      let fileElement = document.querySelector("#files");
-
-      // remove all entries except for the 'no file selected' option
-      while (fileElement.lastChild.value) {
-        fileElement.removeChild(fileElement.lastChild);
-      }
-
-      // re-add all files as an option so now the list is up to date
-      obj.filename.forEach(filename =>{
-        var optionElement = document.createElement("option");
-        optionElement.value = filename;
-        optionElement.text = filename;
-        fileElement.appendChild(optionElement);
-      });
+    // We deleted a file and now need to refresh the list of files on client end
+    if(obj.task === "delete"){
+      getAllNBTFiles();
     }
 
-    // refresh the grid on screen and update internal structureBlocks variable 
-    if(obj.structureData){
-      setupGrid(obj.structureData);
+    if(xhr.getResponseHeader('Content-Type') === 'application/json'){
+      if(obj.filename){
+        let fileElement = document.querySelector("#files");
+  
+        // remove all entries except for the 'no file selected' option
+        while (fileElement.lastChild.value) {
+          fileElement.removeChild(fileElement.lastChild);
+        }
+  
+        // re-add all files as an option so now the list is up to date
+        obj.filename.forEach(filename =>{
+          var optionElement = document.createElement("option");
+          optionElement.value = filename;
+          optionElement.text = filename;
+          fileElement.appendChild(optionElement);
+        });
+      }
+  
+      // refresh the grid on screen and update internal structureBlocks variable 
+      if(obj.structureData){
+        setupGrid(obj.structureData);
+      }
     }
   }
 
@@ -84,7 +91,7 @@ const handleResponse = (xhr, parseResponse) => {
  * 
  * @param {*} e dom element activated
  */
-const requestNBTFile = (e) => {
+const NBTFileRequest = (e) => {
   const file = document.querySelector("#files").value;
 
   if(file){
@@ -97,16 +104,16 @@ const requestNBTFile = (e) => {
     }
 
     // The button stores what the request is
-    let params = `/${e.target.value}?uuid=${file}&_csrf=${document.querySelector("#_csrfhidden").value}`;
+    let action = `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}&nbt_file=${file}`;
 
-    xhr.open(e.target.getAttribute("data-request-type"), params); 
+    xhr.open(e.target.getAttribute("data-request-type"), action); 
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.onload = () => handleResponse(xhr, true);
     xhr.send();
     e.preventDefault();
   }
   else{
-    alert("No file was selected to get from the server.");
+    alert("No file was selected.");
   }
 
   return false;
@@ -214,9 +221,9 @@ var setup = function(csrf) {
     <TopSection csrf={csrf}/>, document.querySelector("#topSection")
   );
   document.querySelector("#saveButton").addEventListener('click', sendNBTData);
-  document.querySelector("#loadButton").addEventListener('click', requestNBTFile);
-  document.querySelector("#downloadButton").addEventListener('click', requestNBTFile);
-  document.querySelector("#deleteButton").addEventListener('click', requestNBTFile);
+  document.querySelector("#loadButton").addEventListener('click', NBTFileRequest);
+  document.querySelector("#downloadButton").addEventListener('click', NBTFileRequest);
+  document.querySelector("#deleteButton").addEventListener('click', NBTFileRequest);
   setupControls();
   setupGrid();
   getAllNBTFiles();

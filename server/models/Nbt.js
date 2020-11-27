@@ -58,6 +58,16 @@ NbtSchema.statics.returnDataForOwner = (ownerId, nameIn, callback) => {
   return NbtModel.find(search).select('size data').lean().exec(callback);
 };
 
+NbtSchema.statics.deleteFileFromowner = (ownerId, nameIn, callback) => {
+  const search = {
+    owner: convertId(ownerId),
+    filename: nameIn,
+  };
+
+  return NbtModel.deleteOne(search, callback);
+};
+
+
 NbtModel = mongoose.model('Nbt', NbtSchema);
 
 module.exports.NbtModel = NbtModel;
