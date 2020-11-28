@@ -8,7 +8,7 @@ const router = (app) => {
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
   app.get('/getNBTFile', mid.requiresLogin, controllers.Nbt.getNBTFile);
-  app.get('/getDownloadableNBTFile', mid.requiresLogin, controllers.Nbt.getDownloadableNBTFile);
+  app.post('/downloadNBTFile', mid.requiresLogin, controllers.Nbt.downloadNBTFile);
   app.get('/getFileList', mid.requiresLogin, controllers.Nbt.getFileList);
   app.delete('/deleteFile', mid.requiresLogin, controllers.Nbt.deleteNbt);
   app.post('/saveNBT', mid.requiresLogin, controllers.Nbt.saveNBT);

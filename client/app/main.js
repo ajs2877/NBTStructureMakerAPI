@@ -12,7 +12,8 @@ selectedFile = "";
 const handleResponse = (xhr, parseResponse) => {
   let msg;
 
-  if(parseResponse && xhr.response) {
+  // Need to do .includes( as we get back "application/json; charset=utf-8"
+  if(parseResponse && xhr.response && xhr.getResponseHeader('Content-Type').includes('application/json')) {
     const obj = JSON.parse(xhr.response);
     if(obj.message){
       msg = obj.message;
@@ -57,12 +58,12 @@ const handleResponse = (xhr, parseResponse) => {
   if(msg){
     alert(msg);
   }
-  
+  let test = xhr.getResponseHeader("Content-Type");
   // How to download blobs safely on any browser. 
   // The setTimeout is needed for FireFox because
   // FireFox just has to be special...
   // Source: https://stackoverflow.com/a/48968694
-  if (xhr.getResponseHeader("Content-Type") === "application/octet-stream" && xhr.responseType === "arraybuffer") {
+  if (xhr.getResponseHeader("Content-Type") === "application/octet-stream") {
     let link = document.createElement('a');
     let blob = new Blob([xhr.response], {type: "application/octet-stream"});
 
@@ -91,7 +92,7 @@ const NBTFileRequest = (e) => {
     const xhr = new XMLHttpRequest();
     
     //needed to parse the response as binary easily
-    if(e.target.value === "getDownloadableNBTFile"){
+    if(e.target.value === "downloadNBTFile"){
       xhr.responseType = "arraybuffer";
     }
 
@@ -188,7 +189,7 @@ const sendNBTData = (e) => {
 
   // Setup the post request and zooom. To the server it goes
   const info = {
-      action: `/saveNBT?_csrf=${document.querySelector("#_csrfhidden").value}`,
+      action: `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}`,
       method: "POST" 
     };
   const xhrObj = createXHR(info, {
@@ -217,9 +218,9 @@ const TopSection = (props) => {
       <select id="files">
         <option value="">Create New File</option>
       </select>
-      <button id="saveButton">Save NBT</button>
+      <button id="saveButton" value="saveNBT">Save NBT</button>
       <button id="loadButton" value="getNBTFile" data-request-type="GET">Load NBT File</button>
-      <button id="downloadButton" value="getDownloadableNBTFile" data-request-type="GET">Download Loaded File</button>
+      <button id="downloadButton" value="downloadNBTFile" data-request-type="GET">Download Loaded File</button>
       <button id="deleteButton" value="deleteFile" data-request-type="DELETE">Delete selected NBT File</button>
     </div>
   );
@@ -231,7 +232,7 @@ var setup = function(csrf) {
   );
   document.querySelector("#saveButton").addEventListener('click', sendNBTData);
   document.querySelector("#loadButton").addEventListener('click', NBTFileRequest);
-  document.querySelector("#downloadButton").addEventListener('click', NBTFileRequest);
+  document.querySelector("#downloadButton").addEventListener('click', sendNBTData);
   document.querySelector("#deleteButton").addEventListener('click', NBTFileRequest);
   setupControls();
   setupGrid();

@@ -8,9 +8,9 @@ selectedFile = "";
  */
 
 const handleResponse = (xhr, parseResponse) => {
-  let msg;
+  let msg; // Need to do .includes( as we get back "application/json; charset=utf-8"
 
-  if (parseResponse && xhr.response) {
+  if (parseResponse && xhr.response && xhr.getResponseHeader('Content-Type').includes('application/json')) {
     const obj = JSON.parse(xhr.response);
 
     if (obj.message) {
@@ -54,13 +54,14 @@ const handleResponse = (xhr, parseResponse) => {
 
   if (msg) {
     alert(msg);
-  } // How to download blobs safely on any browser. 
+  }
+
+  let test = xhr.getResponseHeader("Content-Type"); // How to download blobs safely on any browser. 
   // The setTimeout is needed for FireFox because
   // FireFox just has to be special...
   // Source: https://stackoverflow.com/a/48968694
 
-
-  if (xhr.getResponseHeader("Content-Type") === "application/octet-stream" && xhr.responseType === "arraybuffer") {
+  if (xhr.getResponseHeader("Content-Type") === "application/octet-stream") {
     let link = document.createElement('a');
     let blob = new Blob([xhr.response], {
       type: "application/octet-stream"
@@ -94,7 +95,7 @@ const NBTFileRequest = e => {
     //make a new AJAX request asynchronously
     const xhr = new XMLHttpRequest(); //needed to parse the response as binary easily
 
-    if (e.target.value === "getDownloadableNBTFile") {
+    if (e.target.value === "downloadNBTFile") {
       xhr.responseType = "arraybuffer";
     } // The button stores what the request is
 
@@ -187,7 +188,7 @@ const sendNBTData = e => {
   const bodyData = data.join('&'); // Setup the post request and zooom. To the server it goes
 
   const info = {
-    action: `/saveNBT?_csrf=${document.querySelector("#_csrfhidden").value}`,
+    action: `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}`,
     method: "POST"
   };
   const xhrObj = createXHR(info, {
@@ -220,14 +221,15 @@ const TopSection = props => {
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
   }, "Create New File")), /*#__PURE__*/React.createElement("button", {
-    id: "saveButton"
+    id: "saveButton",
+    value: "saveNBT"
   }, "Save NBT"), /*#__PURE__*/React.createElement("button", {
     id: "loadButton",
     value: "getNBTFile",
     "data-request-type": "GET"
   }, "Load NBT File"), /*#__PURE__*/React.createElement("button", {
     id: "downloadButton",
-    value: "getDownloadableNBTFile",
+    value: "downloadNBTFile",
     "data-request-type": "GET"
   }, "Download Loaded File"), /*#__PURE__*/React.createElement("button", {
     id: "deleteButton",
@@ -242,7 +244,7 @@ var setup = function (csrf) {
   }), document.querySelector("#topSection"));
   document.querySelector("#saveButton").addEventListener('click', sendNBTData);
   document.querySelector("#loadButton").addEventListener('click', NBTFileRequest);
-  document.querySelector("#downloadButton").addEventListener('click', NBTFileRequest);
+  document.querySelector("#downloadButton").addEventListener('click', sendNBTData);
   document.querySelector("#deleteButton").addEventListener('click', NBTFileRequest);
   setupControls();
   setupGrid();
