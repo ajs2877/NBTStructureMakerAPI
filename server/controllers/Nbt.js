@@ -146,8 +146,8 @@ const downloadNBTFile = (req, res) => {
       let readStream = new stream.PassThrough();
       readStream.end(zipped);
       res.setHeader('Content-Length', Buffer.byteLength(zipped)); 
-      res.set('Content-disposition', `attachment; filename=${req.body.filename}.nbt`);
-      res.set('Content-Type', 'application/octet-stream');     
+      res.setHeader('Content-disposition', `attachment; filename=${req.body.filename}.nbt`);
+      res.setHeader('Content-Type', 'application/octet-stream');     
       readStream.pipe(res);
       return;
     } 
