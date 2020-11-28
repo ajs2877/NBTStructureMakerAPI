@@ -99,12 +99,12 @@ const getNBTFile = (req, res) => Nbt.NbtModel.returnDataForOwner(
     for(let x = 0; x < docs[0].size; x++){
       let row = [];
       for(let z = 0; z < docs[0].size; z++){
-        row.push(docs[0].data[x + z * docs[0].size]);
+        row.push(docs[0].data[x * docs[0].size + z ]);
       }
       formattedData.push(row);
     }
 
-    return res.json({ nbt: docs[0].data, size: docs[0].size, task: "load" });
+    return res.json({ nbt: formattedData, size: docs[0].size, task: "load" });
   },
 );
 

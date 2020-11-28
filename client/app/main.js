@@ -46,13 +46,10 @@ const handleResponse = (xhr, parseResponse) => {
       });
     }
 
-    if(xhr.getResponseHeader('Content-Type') === 'application/json'){
-  
-      // refresh the grid on screen and update internal structureBlocks variable 
-      if(obj.task === "load" && obj.nbts && obj.size){
-        setupGrid(obj.nbt, obj.size);
-        msg = "file loaded successfully!"
-      }
+    // refresh the grid on screen and update internal structureBlocks variable 
+    if(obj.task === "load" && obj.nbt && obj.size){
+      setupGrid(obj.nbt, obj.size);
+      msg = "file loaded successfully!"
     }
   }
 
