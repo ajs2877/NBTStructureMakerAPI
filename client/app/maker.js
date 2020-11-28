@@ -43,14 +43,17 @@ const setupControls = () => {
  * If nbt data is passed in instead, it will make
  * the grid show the contents of the nbt data.
  */
-const setupGrid = (structureData) => {
+const setupGrid = (structureData, structureSize) => {
   let xSize = defaultSize; 
   let zSize = defaultSize;
+  if(structureSize){
+    xSize = structureSize;
+    zSize = structureSize;
+  }
+
   window.structureBlocks = [];
 
   if(structureData){
-    xSize = structureData.length;
-    zSize = structureData[0].length;
     window.structureBlocks = structureData; 
   }
   

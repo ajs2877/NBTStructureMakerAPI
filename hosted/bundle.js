@@ -1,6 +1,7 @@
 // Set global as this is needed to be setup by ui
 // Hold info of the structure itself as a 2d array rright now.
 window.structureBlocks = [];
+selectedFile = "";
 /**
  * Parses the response from server and update the state of the
  * code on client side to be up to date on what happened serverside.
@@ -8,19 +9,6 @@ window.structureBlocks = [];
 
 const handleResponse = (xhr, parseResponse) => {
   let msg;
-
-  switch (xhr.status) {
-    case 201:
-      // A new NBT file was made.
-      // Refresh list to show current files avaliable.
-      getAllNBTFiles();
-      break;
-
-    case 204:
-      // Manually show this message as 204 code will not send an xhr.response
-      msg = "Updated file successfully!";
-      break;
-  }
 
   if (parseResponse && xhr.response) {
     const obj = JSON.parse(xhr.response);
@@ -32,28 +20,35 @@ const handleResponse = (xhr, parseResponse) => {
 
     if (obj.task === "delete") {
       getAllNBTFiles();
+      msg = "file deleted successfully!";
+    }
+
+    if (obj.task === "save") {
+      getAllNBTFiles(selectedFile);
+      msg = "Updated file successfully!";
+    }
+
+    if (obj.filename) {
+      let fileElement = document.querySelector("#files"); // remove all entries except for the 'no file selected' option
+
+      while (fileElement.lastChild.value) {
+        fileElement.removeChild(fileElement.lastChild);
+      } // re-add all files as an option so now the list is up to date
+
+
+      obj.filename.forEach(filename => {
+        var optionElement = document.createElement("option");
+        optionElement.value = filename;
+        optionElement.text = filename;
+        fileElement.appendChild(optionElement);
+      });
     }
 
     if (xhr.getResponseHeader('Content-Type') === 'application/json') {
-      if (obj.filename) {
-        let fileElement = document.querySelector("#files"); // remove all entries except for the 'no file selected' option
-
-        while (fileElement.lastChild.value) {
-          fileElement.removeChild(fileElement.lastChild);
-        } // re-add all files as an option so now the list is up to date
-
-
-        obj.filename.forEach(filename => {
-          var optionElement = document.createElement("option");
-          optionElement.value = filename;
-          optionElement.text = filename;
-          fileElement.appendChild(optionElement);
-        });
-      } // refresh the grid on screen and update internal structureBlocks variable 
-
-
-      if (obj.structureData) {
-        setupGrid(obj.structureData);
+      // refresh the grid on screen and update internal structureBlocks variable 
+      if (obj.task === "load" && obj.nbts && obj.size) {
+        setupGrid(obj.nbt, obj.size);
+        msg = "file loaded successfully!";
       }
     }
   } // give the user the message so they know the server did something magical
@@ -125,7 +120,7 @@ const NBTFileRequest = e => {
  */
 
 
-const getAllNBTFiles = () => {
+const getAllNBTFiles = defaultFile => {
   sendAjax('GET', `/getFileList?_csrf=${document.querySelector("#_csrfhidden").value}`, null, data => {
     // ReactDOM.render(
     //     <DomoList domos={data.domos} />, document.querySelector("#domos")
@@ -134,14 +129,24 @@ const getAllNBTFiles = () => {
 
     while (fileElement.lastChild.value) {
       fileElement.removeChild(fileElement.lastChild);
-    } // re-add all files as an option so now the list is up to date
+    }
 
+    fileElement.selectedIndex = 0; // Select default by well, default
+    // re-add all files as an option so now the list is up to date
+
+    let index = 1; // 0 is no file selected
 
     data.nbts.forEach(entry => {
       var optionElement = document.createElement("option");
       optionElement.value = entry.filename;
       optionElement.text = entry.filename;
-      fileElement.appendChild(optionElement);
+      fileElement.appendChild(optionElement); // set selected default
+
+      if (defaultFile && defaultFile === entry.filename) {
+        fileElement.selectedIndex = index;
+      }
+
+      index = index + 1;
     });
   });
   return false;
@@ -165,6 +170,13 @@ const sendNBTData = e => {
     payload.filename = file; // a file to save to was selected
   } else {
     payload.filename = prompt("Enter a name for your build!");
+  }
+
+  if (!payload.filename) {
+    alert("You need to enter a valid name to create or overwrite a file.");
+    return false;
+  } else {
+    selectedFile = payload.filename;
   } // Format the data.
   // From working example of one of the HWs when inspected. 
   // I prefer this over the hardcoded string.
@@ -219,7 +231,7 @@ const TopSection = props => {
     id: "downloadButton",
     value: "getDownloadableNBTFile",
     "data-request-type": "GET"
-  }, "Download selected NBT File"), /*#__PURE__*/React.createElement("button", {
+  }, "Download Loaded File"), /*#__PURE__*/React.createElement("button", {
     id: "deleteButton",
     value: "deleteFile",
     "data-request-type": "DELETE"
@@ -295,14 +307,18 @@ const setupControls = () => {
  */
 
 
-const setupGrid = structureData => {
+const setupGrid = (structureData, structureSize) => {
   let xSize = defaultSize;
   let zSize = defaultSize;
+
+  if (structureSize) {
+    xSize = structureSize;
+    zSize = structureSize;
+  }
+
   window.structureBlocks = [];
 
   if (structureData) {
-    xSize = structureData.length;
-    zSize = structureData[0].length;
     window.structureBlocks = structureData;
   } // wipes old grid
 

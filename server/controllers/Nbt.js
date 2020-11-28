@@ -36,7 +36,7 @@ const saveNBT = (req, res) => {
             console.log(err2);
             return res.status(400).json({ error: 'An error occurred' });
           }
-          return res.json({ action: 'success!' });
+          return res.json({ action: 'success!', task: 'save'});
         },
       );
     }
@@ -47,7 +47,8 @@ const saveNBT = (req, res) => {
     const nbtPromise = newNbt.save();
 
     nbtPromise.then(() => res.json({
-      redirect: '/maker',
+      action: 'success!',
+      task: 'save',
     }));
 
     nbtPromise.catch((err2) => {
@@ -85,8 +86,27 @@ const deleteNbt = (req, res) => Nbt.NbtModel.deleteFileFromowner(
   }
 );
 
-const getNBTFile = () => {
-};
+const getNBTFile = (req, res) => Nbt.NbtModel.returnDataForOwner(
+  req.session.account._id,
+  req.query.nbt_file, 
+  (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+    // format it as a 2D array for the client side to parse easier
+    let formattedData = [];
+    for(let x = 0; x < docs[0].size; x++){
+      let row = [];
+      for(let z = 0; z < docs[0].size; z++){
+        row.push(docs[0].data[x + z * docs[0].size]);
+      }
+      formattedData.push(row);
+    }
+
+    return res.json({ nbt: docs[0].data, size: docs[0].size, task: "load" });
+  },
+);
 
 const getFileList = (request, response) => {
   const req = request;
