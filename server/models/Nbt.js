@@ -67,7 +67,6 @@ NbtSchema.statics.deleteFileFromowner = (ownerId, nameIn, callback) => {
   return NbtModel.deleteOne(search, callback);
 };
 
-
 NbtModel = mongoose.model('Nbt', NbtSchema);
 
 module.exports.NbtModel = NbtModel;

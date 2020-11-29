@@ -1,8 +1,8 @@
-const models = require('../models');
 const fs = require('fs');
 const nbt = require('nbt');
 const zlib = require('zlib');
 const stream = require('stream');
+const models = require('../models');
 
 const { Nbt } = models;
 
@@ -26,7 +26,6 @@ const makerPage = (req, res) => res.render('app', {
 });
 
 const saveNBT = (req, res) => {
-
   if (!req.body.filename || !req.body.size || !req.body.structureBlocks) {
     return res.status(400).json({
       error: 'File name, size, and structureBlocks are required',
@@ -56,7 +55,7 @@ const saveNBT = (req, res) => {
             console.log(err2);
             return res.status(400).json({ error: 'An error occurred' });
           }
-          return res.json({ action: 'success!', task: 'save'});
+          return res.json({ action: 'success!', task: 'save' });
         },
       );
     }
@@ -84,7 +83,6 @@ const saveNBT = (req, res) => {
 };
 
 const downloadNBTFile = (req, res) => {
-  
   if (!req.body.filename || !req.body.size || !req.body.structureBlocks) {
     return res.status(400).json({
       error: 'File name, size, and structureBlocks are required',
@@ -92,14 +90,14 @@ const downloadNBTFile = (req, res) => {
   }
 
   // format it as a 2D array for the client side to parse easier
-  let unformattedData = req.body.structureBlocks.split(',');
+  const unformattedData = req.body.structureBlocks.split(',');
 
-  let size = req.body.size;
-  let formattedData = [];
-  for(let x = 0; x < size; x++){
-    let row = [];
-    for(let z = 0; z < size; z++){
-      row.push(unformattedData[x * size + z ]);
+  const { size } = req.body;
+  const formattedData = [];
+  for (let x = 0; x < size; x++) {
+    const row = [];
+    for (let z = 0; z < size; z++) {
+      row.push(unformattedData[x * size + z]);
     }
     formattedData.push(row);
   }
@@ -107,8 +105,10 @@ const downloadNBTFile = (req, res) => {
   const rawdata = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
 
   // nbt package needed to read and write from nbt files.
-  nbt.parse(rawdata, (error, data) => {
+  return nbt.parse(rawdata, (error, dataResult) => {
     if (error) { throw error; }
+
+    const data = dataResult;
 
     data.value.size.value.value[0] = size;
     data.value.size.value.value[1] = 1;
@@ -139,19 +139,18 @@ const downloadNBTFile = (req, res) => {
     // File name are the UUIDs
     try {
       const zipped = zlib.gzipSync(new Uint8Array(nbt.writeUncompressed(data)));
-      fs.writeFileSync(`nbt_files/testzipped.nbt`, zipped); // testing. File is perfect when saved locally.
-  
+      fs.writeFileSync('nbt_files/testzipped.nbt', zipped); // testing. File is perfect when saved locally.
+
       // Stream is a more effcient and easier way to send files to client
       // https://stackoverflow.com/a/45922316
-      let readStream = new stream.PassThrough();
+      const readStream = new stream.PassThrough();
       readStream.end(zipped);
-      res.setHeader('Content-Length', Buffer.byteLength(zipped)); 
+      res.setHeader('Content-Length', Buffer.byteLength(zipped));
       res.setHeader('Content-disposition', `attachment; filename=${req.body.filename}.nbt`);
-      res.setHeader('Content-Type', 'application/octet-stream');     
+      res.setHeader('Content-Type', 'application/octet-stream');
       readStream.pipe(res);
-      return;
-    } 
-    catch (err) {
+      return null;
+    } catch (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
     }
@@ -160,36 +159,35 @@ const downloadNBTFile = (req, res) => {
 
 const deleteNbt = (req, res) => Nbt.NbtModel.deleteFileFromowner(
   req.session.account._id,
-  req.query.nbt_file, 
+  req.query.nbt_file,
   (err2) => {
     if (err2) {
       console.log(err2);
       return res.status(400).json({ error: 'An error occurred' });
     }
-    return res.json({ action: 'success!', task: "delete" });
-  }
+    return res.json({ action: 'success!', task: 'delete' });
+  },
 );
 
 const getNBTFile = (req, res) => Nbt.NbtModel.returnDataForOwner(
   req.session.account._id,
-  req.query.nbt_file, 
+  req.query.nbt_file,
   (err, docs) => {
-
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
     }
     // format it as a 2D array for the client side to parse easier
-    let formattedData = [];
-    for(let x = 0; x < docs[0].size; x++){
-      let row = [];
-      for(let z = 0; z < docs[0].size; z++){
-        row.push(docs[0].data[x * docs[0].size + z ]);
+    const formattedData = [];
+    for (let x = 0; x < docs[0].size; x++) {
+      const row = [];
+      for (let z = 0; z < docs[0].size; z++) {
+        row.push(docs[0].data[x * docs[0].size + z]);
       }
       formattedData.push(row);
     }
 
-    return res.json({ nbt: formattedData, size: docs[0].size, task: "load" });
+    return res.json({ nbt: formattedData, size: docs[0].size, task: 'load' });
   },
 );
 

@@ -219,9 +219,9 @@ const TopSection = (props) => {
         <option value="">Create New File</option>
       </select>
       <button id="saveButton" value="saveNBT">Save NBT</button>
-      <button id="loadButton" value="getNBTFile" data-request-type="GET">Load NBT File</button>
-      <button id="downloadButton" value="downloadNBTFile" data-request-type="GET">Download Loaded File</button>
-      <button id="deleteButton" value="deleteFile" data-request-type="DELETE">Delete selected NBT File</button>
+      <button id="loadButton" value="getNBTFile">Load NBT File</button>
+      <button id="downloadButton" value="downloadNBTFile">Download Loaded File</button>
+      <button id="deleteButton" value="deleteFile">Delete selected NBT File</button>
     </div>
   );
 };
