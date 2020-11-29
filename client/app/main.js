@@ -90,11 +90,6 @@ const NBTFileRequest = (e) => {
   if(file){
     //make a new AJAX request asynchronously
     const xhr = new XMLHttpRequest();
-    
-    //needed to parse the response as binary easily
-    if(e.target.value === "downloadNBTFile"){
-      xhr.responseType = "arraybuffer";
-    }
 
     // The button stores what the request is
     let action = `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}&nbt_file=${file}`;
@@ -187,6 +182,13 @@ const sendNBTData = (e) => {
   });
   const bodyData = data.join('&');
 
+    
+  //needed to parse the response as binary easily
+  // I'm desperate at this point... just work!
+  if(e.target.value === "downloadNBTFile"){
+    xhr.responseType = "arraybuffer";
+  }
+
   // Setup the post request and zooom. To the server it goes
   const info = {
       action: `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}`,
@@ -219,9 +221,9 @@ const TopSection = (props) => {
         <option value="">Create New File</option>
       </select>
       <button id="saveButton" value="saveNBT">Save NBT</button>
-      <button id="loadButton" value="getNBTFile">Load NBT File</button>
+      <button id="loadButton" value="getNBTFile" data-request-type="GET">Load NBT File</button>
       <button id="downloadButton" value="downloadNBTFile">Download Loaded File</button>
-      <button id="deleteButton" value="deleteFile">Delete selected NBT File</button>
+      <button id="deleteButton" value="deleteFile" data-request-type="DELETE">Delete selected NBT File</button>
     </div>
   );
 };

@@ -225,16 +225,13 @@ const TopSection = props => {
     value: "saveNBT"
   }, "Save NBT"), /*#__PURE__*/React.createElement("button", {
     id: "loadButton",
-    value: "getNBTFile",
-    "data-request-type": "GET"
+    value: "getNBTFile"
   }, "Load NBT File"), /*#__PURE__*/React.createElement("button", {
     id: "downloadButton",
-    value: "downloadNBTFile",
-    "data-request-type": "GET"
+    value: "downloadNBTFile"
   }, "Download Loaded File"), /*#__PURE__*/React.createElement("button", {
     id: "deleteButton",
-    value: "deleteFile",
-    "data-request-type": "DELETE"
+    value: "deleteFile"
   }, "Delete selected NBT File"));
 };
 
