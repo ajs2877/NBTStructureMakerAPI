@@ -183,21 +183,25 @@ const sendNBTData = (e) => {
   const bodyData = data.join('&');
 
     
-  //needed to parse the response as binary easily
-  // I'm desperate at this point... just work!
-  if(e.target.value === "downloadNBTFile"){
-    xhr.responseType = "arraybuffer";
-  }
-
   // Setup the post request and zooom. To the server it goes
   const info = {
       action: `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}`,
       method: "POST" 
     };
+
+
+  let accept = 'application/json';
+  //needed to parse the response as binary easily
+  // I'm desperate at this point... just work!
+  if(e.target.value === "downloadNBTFile"){
+    accept = 'application/octet-stream';
+  }
+
   const xhrObj = createXHR(info, {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json'
-  }, handleResponse)
+      'Accept': accept
+  }, handleResponse);
+  
   xhrObj.send(bodyData);
 
   // prevent button default bubbling down behavior I believe

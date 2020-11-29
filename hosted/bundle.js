@@ -93,12 +93,7 @@ const NBTFileRequest = e => {
 
   if (file) {
     //make a new AJAX request asynchronously
-    const xhr = new XMLHttpRequest(); //needed to parse the response as binary easily
-
-    if (e.target.value === "downloadNBTFile") {
-      xhr.responseType = "arraybuffer";
-    } // The button stores what the request is
-
+    const xhr = new XMLHttpRequest(); // The button stores what the request is
 
     let action = `/${e.target.value}?_csrf=${document.querySelector("#_csrfhidden").value}&nbt_file=${file}`;
     xhr.open(e.target.getAttribute("data-request-type"), action);
@@ -193,7 +188,7 @@ const sendNBTData = e => {
   };
   const xhrObj = createXHR(info, {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Accept': 'application/json'
+    'Accept': 'application/octet-stream'
   }, handleResponse);
   xhrObj.send(bodyData); // prevent button default bubbling down behavior I believe
 
@@ -225,13 +220,15 @@ const TopSection = props => {
     value: "saveNBT"
   }, "Save NBT"), /*#__PURE__*/React.createElement("button", {
     id: "loadButton",
-    value: "getNBTFile"
+    value: "getNBTFile",
+    "data-request-type": "GET"
   }, "Load NBT File"), /*#__PURE__*/React.createElement("button", {
     id: "downloadButton",
     value: "downloadNBTFile"
   }, "Download Loaded File"), /*#__PURE__*/React.createElement("button", {
     id: "deleteButton",
-    value: "deleteFile"
+    value: "deleteFile",
+    "data-request-type": "DELETE"
   }, "Delete selected NBT File"));
 };
 
