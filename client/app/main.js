@@ -4,6 +4,62 @@
 window.structureBlocks = [];
 selectedFile = "";
 
+// This const, getBase64Code, and base64ToBytes are needed to convert the encoded 
+// base64 string back to binary data to download as a file. Due to an unknown
+// issue I am having, express keeps converting my binary data to utf8 strings and
+// losing data in the process instead of sending straight binary. This base64
+// encoding bypasses the issue and client side will decode it back to binary.
+// https://stackoverflow.com/a/57111228
+const base64codes = [
+	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63,
+	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255,
+	255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255,
+	255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+	41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+];
+
+// https://stackoverflow.com/a/57111228
+function getBase64Code(charCode) {
+	if (charCode >= base64codes.length) {
+		throw new Error("Unable to parse base64 string.");
+	}
+	const code = base64codes[charCode];
+	if (code === 255) {
+		throw new Error("Unable to parse base64 string.");
+	}
+	return code;
+}
+
+// https://stackoverflow.com/a/57111228
+function base64ToBytes(str) {
+	if (str.length % 4 !== 0) {
+		throw new Error("Unable to parse base64 string.");
+	}
+	const index = str.indexOf("=");
+	if (index !== -1 && index < str.length - 2) {
+		throw new Error("Unable to parse base64 string.");
+	}
+	let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
+		n = str.length,
+		result = new Uint8Array(3 * (n / 4)),
+		buffer;
+	for (let i = 0, j = 0; i < n; i += 4, j += 3) {
+		buffer =
+			getBase64Code(str.charCodeAt(i)) << 18 |
+			getBase64Code(str.charCodeAt(i + 1)) << 12 |
+			getBase64Code(str.charCodeAt(i + 2)) << 6 |
+			getBase64Code(str.charCodeAt(i + 3));
+		result[j] = buffer >> 16;
+		result[j + 1] = (buffer >> 8) & 0xFF;
+		result[j + 2] = buffer & 0xFF;
+	}
+	return result.subarray(0, result.length - missingOctets);
+}
+
+///////////////////////////////////////////////////////////////////
 
 /**
  * Parses the response from server and update the state of the
@@ -58,15 +114,16 @@ const handleResponse = (xhr, parseResponse) => {
   if(msg){
     alert(msg);
   }
-  let test = xhr.getResponseHeader("Content-Type");
+  
   // How to download blobs safely on any browser. 
   // The setTimeout is needed for FireFox because
   // FireFox just has to be special...
   // Source: https://stackoverflow.com/a/48968694
   if (xhr.getResponseHeader("Content-Type") === "application/octet-stream") {
     let link = document.createElement('a');
-    let blob = new Blob([base64ToBytes(xhr.response)], {type: "application/octet-stream"});
 
+    // Parse the encoded base64 string back to binary to bypass the express string only issue
+    let blob = new Blob([base64ToBytes(xhr.response)], {type: "application/octet-stream"});
     let url = window.URL.createObjectURL(blob);
     link.href = url;
     link.download = xhr.getResponseHeader('Content-Disposition').split('=')[1];
@@ -77,52 +134,6 @@ const handleResponse = (xhr, parseResponse) => {
     }, 1);  
   }
 };
-
-const base64codes = [
-	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63,
-	52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255,
-	255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255,
-	255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-	41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
-];
-
-function getBase64Code(charCode) {
-	if (charCode >= base64codes.length) {
-		throw new Error("Unable to parse base64 string.");
-	}
-	const code = base64codes[charCode];
-	if (code === 255) {
-		throw new Error("Unable to parse base64 string.");
-	}
-	return code;
-}
-function base64ToBytes(str) {
-	if (str.length % 4 !== 0) {
-		throw new Error("Unable to parse base64 string.");
-	}
-	const index = str.indexOf("=");
-	if (index !== -1 && index < str.length - 2) {
-		throw new Error("Unable to parse base64 string.");
-	}
-	let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
-		n = str.length,
-		result = new Uint8Array(3 * (n / 4)),
-		buffer;
-	for (let i = 0, j = 0; i < n; i += 4, j += 3) {
-		buffer =
-			getBase64Code(str.charCodeAt(i)) << 18 |
-			getBase64Code(str.charCodeAt(i + 1)) << 12 |
-			getBase64Code(str.charCodeAt(i + 2)) << 6 |
-			getBase64Code(str.charCodeAt(i + 3));
-		result[j] = buffer >> 16;
-		result[j + 1] = (buffer >> 8) & 0xFF;
-		result[j + 2] = buffer & 0xFF;
-	}
-	return result.subarray(0, result.length - missingOctets);
-}
 
 /**
  * using query params, this will ask the server to return the specified
@@ -264,7 +275,7 @@ const TopSection = (props) => {
   //  </div>
   return (
     <div>
-      <h1>NBT Structure Maker API</h1>
+      <h1><img id="logo" src="../assets/img/stone_bricks.jpg" alt="logo"/>&nbsp;&nbsp;NBT Structure Maker API&nbsp;&nbsp;<img id="logo" src="../assets/img/stone_bricks.jpg" alt="logo"/></h1>
       <input type="hidden" name="_csrf" id="_csrfhidden" value={props.csrf} />
       <div className="navlink"><a href="/logout">Log out</a></div>
       <select id="files">

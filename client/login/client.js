@@ -1,4 +1,4 @@
-var handleLogin = (e) => {
+let handleLogin = (e) => {
     e.preventDefault(); 
 
     if($("#user").val() == '' || $("#pass").val() == '') {
@@ -16,7 +16,7 @@ var handleLogin = (e) => {
     return false; 
 }; 
     
-var handleSignup = (e) => { 
+let handleSignup = (e) => { 
     e.preventDefault(); 
 
     if($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == ''){
@@ -37,7 +37,7 @@ var handleSignup = (e) => {
     return false; 
 }; 
     
-var LoginWindow = (props) => { 
+let LoginWindow = (props) => { 
     return (
     <form id="loginForm" 
             name="loginForm" 
@@ -45,18 +45,23 @@ var LoginWindow = (props) => {
             action="/login" 
             method="POST" 
             className="mainForm">
-
-        <label htmlFor="username">Username: </label> 
-        <input id="user" type="text" name="username" placeholder="username"/> 
-        <label htmlFor="pass">Password: </label> 
-        <input id="pass" type="password" name="pass" placeholder="password"/> 
-        <input type="hidden" name="_csrf" value={props.csrf}/> 
-        <input className="formSubmit" type="submit" value="Sign in" /> 
+        <div>
+            <label htmlFor="username">Username: </label> 
+            <input id="user" type="text" name="username" placeholder="username"/> 
+        </div>
+        <div>
+            <label htmlFor="pass">Password: </label> 
+            <input id="pass" type="password" name="pass" placeholder="password"/> 
+        </div>
+        <div>
+            <input type="hidden" name="_csrf" value={props.csrf}/> 
+            <input className="formSubmit" type="submit" value="Sign in" />
+        </div>
     </form> 
     ); 
 }; 
 
-var SignupWindow = (props) => { 
+let SignupWindow = (props) => { 
     return (
     <form id="signupForm" 
             name="signupForm" 
@@ -64,46 +69,57 @@ var SignupWindow = (props) => {
             action="/signup" 
             method="POST" 
             className="mainForm">
-
-        <label htmlFor="username">Username: </label> 
-        <input id="user" type="text" name="username" placeholder="username"/> 
-        <label htmlFor="pass">Password: </label> 
-        <input id="pass" type="password" name="pass" placeholder="password"/> 
-        <label htmlFor="pass2">Password: </label> 
-        <input id="pass2" type="password" name="pass2" placeholder="retype password"/> 
-        <input type="hidden" name="_csrf" value={props.csrf}/> 
-        <input className="formSubmit" type="submit" value="Sign in" /> 
+        <div>
+            <label htmlFor="username">Username: </label> 
+            <input id="user" type="text" name="username" placeholder="username"/> 
+        </div>
+        <div>
+            <label htmlFor="pass">Password: </label> 
+            <input id="pass" type="password" name="pass" placeholder="password"/> 
+        </div>
+        <div>
+            <label htmlFor="pass2">Password: </label> 
+            <input id="pass2" type="password" name="pass2" placeholder="retype password"/> 
+        </div>
+        <div>
+            <input type="hidden" name="_csrf" value={props.csrf}/> 
+            <input className="formSubmit" type="submit" value="Sign in" />
+        </div>
     </form> 
     ); 
 }; 
 
-var createLoginWindow = (csrf) => {
+let createLoginWindow = (csrf) => {
     ReactDOM.render(
         <LoginWindow csrf={csrf} />,
         document.querySelector("#content")
     );
 };
 
-var createSignupWindow = (csrf) => {
+let createSignupWindow = (csrf) => {
     ReactDOM.render(
         <SignupWindow csrf={csrf} />,
         document.querySelector("#content")
     );
 };
 
-var setup = (csrf) => { 
-    var loginButton = document.querySelector("#loginButton"); 
-    var signupButton = document.querySelector("#signupButton"); 
+let setup = (csrf) => { 
+    let loginButton = document.querySelector("#loginButton"); 
+    let signupButton = document.querySelector("#signupButton"); 
 
     signupButton.addEventListener("click", (e) => { 
         e.preventDefault(); 
         createSignupWindow(csrf); 
+        loginButton.style.display = "inline-block";
+        signupButton.style.display = "none";
         return false; 
     }); 
 
     loginButton.addEventListener("click", (e) => { 
         e.preventDefault(); 
         createLoginWindow(csrf); 
+        loginButton.style.display = "none";
+        signupButton.style.display = "inline-block";
         return false; 
     }); 
 
@@ -111,7 +127,7 @@ var setup = (csrf) => {
     createLoginWindow(csrf); //default view 
 }; 
 
-var getToken = () => {
+let getToken = () => {
     sendAjax('GET', '/getToken', null, (result) => {
         setup(result.csrfToken);
     });

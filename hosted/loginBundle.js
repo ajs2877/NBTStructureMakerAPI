@@ -1,4 +1,4 @@
-var handleLogin = e => {
+let handleLogin = e => {
   e.preventDefault();
 
   if ($("#user").val() == '' || $("#pass").val() == '') {
@@ -11,7 +11,7 @@ var handleLogin = e => {
   return false;
 };
 
-var handleSignup = e => {
+let handleSignup = e => {
   e.preventDefault();
 
   if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
@@ -28,7 +28,7 @@ var handleSignup = e => {
   return false;
 };
 
-var LoginWindow = props => {
+let LoginWindow = props => {
   return /*#__PURE__*/React.createElement("form", {
     id: "loginForm",
     name: "loginForm",
@@ -36,21 +36,21 @@ var LoginWindow = props => {
     action: "/login",
     method: "POST",
     className: "mainForm"
-  }, /*#__PURE__*/React.createElement("label", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     htmlFor: "username"
   }, "Username: "), /*#__PURE__*/React.createElement("input", {
     id: "user",
     type: "text",
     name: "username",
     placeholder: "username"
-  }), /*#__PURE__*/React.createElement("label", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     htmlFor: "pass"
   }, "Password: "), /*#__PURE__*/React.createElement("input", {
     id: "pass",
     type: "password",
     name: "pass",
     placeholder: "password"
-  }), /*#__PURE__*/React.createElement("input", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
     type: "hidden",
     name: "_csrf",
     value: props.csrf
@@ -58,10 +58,10 @@ var LoginWindow = props => {
     className: "formSubmit",
     type: "submit",
     value: "Sign in"
-  }));
+  })));
 };
 
-var SignupWindow = props => {
+let SignupWindow = props => {
   return /*#__PURE__*/React.createElement("form", {
     id: "signupForm",
     name: "signupForm",
@@ -69,28 +69,28 @@ var SignupWindow = props => {
     action: "/signup",
     method: "POST",
     className: "mainForm"
-  }, /*#__PURE__*/React.createElement("label", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     htmlFor: "username"
   }, "Username: "), /*#__PURE__*/React.createElement("input", {
     id: "user",
     type: "text",
     name: "username",
     placeholder: "username"
-  }), /*#__PURE__*/React.createElement("label", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     htmlFor: "pass"
   }, "Password: "), /*#__PURE__*/React.createElement("input", {
     id: "pass",
     type: "password",
     name: "pass",
     placeholder: "password"
-  }), /*#__PURE__*/React.createElement("label", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     htmlFor: "pass2"
   }, "Password: "), /*#__PURE__*/React.createElement("input", {
     id: "pass2",
     type: "password",
     name: "pass2",
     placeholder: "retype password"
-  }), /*#__PURE__*/React.createElement("input", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("input", {
     type: "hidden",
     name: "_csrf",
     value: props.csrf
@@ -98,38 +98,42 @@ var SignupWindow = props => {
     className: "formSubmit",
     type: "submit",
     value: "Sign in"
-  }));
+  })));
 };
 
-var createLoginWindow = csrf => {
+let createLoginWindow = csrf => {
   ReactDOM.render( /*#__PURE__*/React.createElement(LoginWindow, {
     csrf: csrf
   }), document.querySelector("#content"));
 };
 
-var createSignupWindow = csrf => {
+let createSignupWindow = csrf => {
   ReactDOM.render( /*#__PURE__*/React.createElement(SignupWindow, {
     csrf: csrf
   }), document.querySelector("#content"));
 };
 
-var setup = csrf => {
-  var loginButton = document.querySelector("#loginButton");
-  var signupButton = document.querySelector("#signupButton");
+let setup = csrf => {
+  let loginButton = document.querySelector("#loginButton");
+  let signupButton = document.querySelector("#signupButton");
   signupButton.addEventListener("click", e => {
     e.preventDefault();
     createSignupWindow(csrf);
+    loginButton.style.display = "inline-block";
+    signupButton.style.display = "none";
     return false;
   });
   loginButton.addEventListener("click", e => {
     e.preventDefault();
     createLoginWindow(csrf);
+    loginButton.style.display = "none";
+    signupButton.style.display = "inline-block";
     return false;
   });
   createLoginWindow(csrf); //default view 
 };
 
-var getToken = () => {
+let getToken = () => {
   sendAjax('GET', '/getToken', null, result => {
     setup(result.csrfToken);
   });

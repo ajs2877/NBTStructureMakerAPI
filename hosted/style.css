@@ -17,6 +17,54 @@ h3{
   font-size: 0.9rem;
 }
 
+#loginButton{
+  display: none;
+}
+#loginForm,#signupForm{
+  margin-top: 5em;
+}
+#loginForm>div,#signupForm>div {
+  margin-top: 1em;
+}
+label{
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+#user,#pass,#pass2,select{
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  background-color: #fff1d4;
+  border: none;
+  color: rgb(0, 0, 0);
+  padding: 3px 4px;
+  display: inline-block;
+}
+.formSubmit,button {
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  background-color: #fdf5af;
+  border: none;
+  color: rgb(0, 0, 0);
+  padding: 0.3rem 0.5rem;
+  margin: 1rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+#topSection{
+  margin-top: 1rem;
+}
+
+div#form-wrapper {
+  position:absolute;
+  top:50%;
+  right:0;
+  left:0;
+}
+nav>h1,#topSection>div>h1 {
+  color: rgb(255, 234, 224);
+}
+a:visited {
+  color: rgb(255, 238, 0);
+}
 
 .block {
   display: inline-block;
