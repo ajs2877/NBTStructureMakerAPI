@@ -4,13 +4,13 @@ In Minecraft, you can place blocks to build all kinds of stuff. With a special b
 
 Thus, the purposed of this site is to allow a quick way for someone to make nbt files when they don't have access to Minecraft.
 
-The API for the site handles sending/recieving objects that will be converted to nbt files on the server and it also allows the user to see and load up any saved nbt file on the server. Furthermore, user can download the nbt file and spawn the build in the game! And the admin can delete files from the server with a password protected button. The password is filament34F@ btw.
+The API for the site handles sending/recieving objects that will be converted to nbt files on the server and it also allows the user to see and load up any saved nbt file on the server. Furthermore, user can download the nbt file and spawn the build in the game! Since the server uses MonogDB along with user sessions, the nbt data is per user and now users can delete their file safely without wrecking someone else's work.
 
-So far, things are looking good for the app. I did have issues with a strange bug where the grid of blocks with change size randomly when saving and loading from the same nbt file. Turns out I was not setting the size entry properly in my post request lol. The nbt parsing was quite a handful but wasn't too bad to get through and works great in the end. getting the downloading to work was a massive pain as window.open(blobUrl) does not let me change the file name downloaded. And when I switched to using an invisible link element that lets me download the blob of data as a file, my pop-up blocker was redirecting me to apage that says "page not found" instead of letting me download. It took me a while to figure out it was the pop-up blocker killing me! Then I found out the nbt package automatically unzips the nbt files and Minecraft will not read it if unzipped. So I had to reverse engineer the nbt package on their GitHub source and figure out how to rezip the nbt data when sent to client so Minecraft will accept it. 
+So far, things are looking good for the app. I did spend a ton of time porting project 1's code to work with Express and redoing the functionalities again from scratch. Specifically, the download, load, save, and selecting files needed to be redone for Express. The biggest and most time consuming hurdle I had was getting downloading to work. Apparently, my Express is setup in such a way that no matter what I do, it always sends the response from the server to the client as a string. I can change the Content-type but and did every solutions I could find online and on stackexchange but I cnanot get it to send my data as binary like I needed. It took so long to figure out that the downloading data was broken and the reason was that Express is doing String(data) somewhere which is a lossy conversion when done on binary data. So I grabbed a guy's code online for converting binary to Base64 encodec string and back. By sending an encoded string and doing the decoding myself, I was able to keep all my data intact despite this strange Express issue. I did make sure to comment in that I am only doing the encoding/decoding as a workaround for a bug but we all know that sadly, "there's nothing more permanent than a temporary solution". 
 
 As for what can be better, absolutely everything lmao. I worked really hard on this app to get it where it is now but it is no where close to perfect. Things that still need to be done:
 
-- Allow custom file names when saving (might be better to do for project 2 as then I can tie files to users and people can name their own files whatever without clashing with other people's files)
+- Stylize the app much better
 
 - Allow building in the Y dimension so users can make 3D builds.
 
@@ -19,46 +19,49 @@ As for what can be better, absolutely everything lmao. I worked really hard on t
 - Perhaps find an API to have full list of Minecraft blocks and allow for greater selection? Would also mean I need to support block properties (like blocks facing certain directions) but that's VERY difficult to work with in nbt files.
 
 
-As for what is above and beyond, I think the block drawing feature is really cool and the ability to see all the avaliable nbt files saved on the server is nice. A ton of work was put into the grid on client side and the nbt reading/parsing on serverside. Furthermore, by having the nbt files stored as actual files, they persist between server restarts so it is kind of like an actual database instead of the temporary storage we were expected to do. Quite a bit of work was put into organizing good parts of the code to make it more legible for myself. Overall, just the interaction of the local data with the server and the client took up the bulk of my time but feels solid now. Just the extra features are needed to make it much more useful. And of course, sending the actual nbt file to the user and letting them download it. That's hard and really above and beyond!
+As for what is above and beyond, well, I think the way I handle all my endpoints and added a few extra functionalities that this project didn't have before really helps! Though debugging was really the bulk of my work this time around and nearly wrecked me. I had to start making tradeoffs between my work on this project and my other projects for other classes if I want to get something workable for all my classes.
 
 ----------------------------------------------
 API endpoints
 
  GET
+  /getToken
+    - gets session token
+  /logout
+    - destroys the user session and logs user out.
+  /main
+    - The main page of the app to make nbt files. Will redirect to login page if not logged in.
   /getNBTFile 
-    - ?uuid=___ 
+    - ?_csrf=___&nbt_file=___ 
     - gets the content of the specified file from the server.
   /getFileList 
+    - ?_csrf=___ 
     - gets the UUID of all nbt files saved on server.
-  /getDownloadableNBTFile
-    - ?uuid=___ 
-    - returns the entire nbt file as a compressed buffer of binary data.
+
+ DELETE
   /deleteFile
-    - ?uuid=___&password=___
+    - ?_csrf=___ 
     - Will delete the file from the server if given password of filament34F@
 
- HEAD
-  /getNBTFile 
-    - ?uuid=___ 
-    - gets the size of the specified file from the server as a header response.
-  /getFileList 
-    - gets the number of nbt files on the server as a header response. 
-  /getDownloadableNBTFile
-    - ?uuid=___ 
-    - returns the size of the compressed binary buffer in bytes.
-  /deleteFile
-    - ?uuid=___&password=___
-    - Will check if the file can be deleted from the server if given password of filament34F@
-
  POST
+  /signup
+    - Create a new account for the user and log them in.
+  /login
+    - Log in the user.
   /saveNBT 
+    - ?_csrf=___ 
     - sends the user's grid info to be saved to an nbt file on server.
+  /downloadNBTFile
+    - ?_csrf=___ 
+    - sends the user's current grid info to be turned into an nbt file on server and sent back to be downloaded on cleint as a file.
 
 ----------------------------------------------
 Credit/sources
 
 nbt package: https://www.npmjs.com/package/nbt
 nbt package docs: http://sjmulder.github.io/nbt-js/
+
+Encode/Decode binary to base64 string and back: https://stackoverflow.com/a/57111228
 
 How to tell if mouse button is still being clicked or held down: https://stackoverflow.com/a/15098620
 

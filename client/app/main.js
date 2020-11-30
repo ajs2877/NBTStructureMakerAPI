@@ -170,9 +170,6 @@ const NBTFileRequest = (e) => {
 const getAllNBTFiles = (defaultFile) => {
 
   sendAjax('GET', `/getFileList?_csrf=${document.querySelector("#_csrfhidden").value}`, null, (data) => {
-    // ReactDOM.render(
-    //     <DomoList domos={data.domos} />, document.querySelector("#domos")
-    // );
     
     let fileElement = document.querySelector("#files");
 

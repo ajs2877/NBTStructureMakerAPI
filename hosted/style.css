@@ -62,7 +62,7 @@ div#form-wrapper {
 nav>h1,#topSection>div>h1 {
   color: rgb(255, 234, 224);
 }
-a:visited {
+a:link, a:visited {
   color: rgb(255, 238, 0);
 }
 
