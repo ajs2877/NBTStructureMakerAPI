@@ -1,7 +1,6 @@
 const fs = require('fs');
 const nbt = require('nbt');
 const zlib = require('zlib');
-const stream = require('stream');
 const models = require('../models');
 
 const { Nbt } = models;
@@ -20,6 +19,47 @@ const blockPalette = {
   crying_obsidian: 7,
   honeycomb_block: 8,
 };
+
+// This const and bytesToBase64 are needed to convert our binary data into a
+// base64 string to send to the client to download as a file. Due to an unknown
+// issue I am having, express keeps converting my binary data to utf8 strings and
+// losing data in the process instead of sending straight binary. This base64
+// encoding bypasses the issue and client side will decode it back to binary.
+// https://stackoverflow.com/a/57111228
+const base64abc = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/',
+];
+
+// https://stackoverflow.com/a/57111228
+function bytesToBase64(bytes) {
+  /* eslint-disable no-bitwise */
+  let result = ''; let i; const
+    l = bytes.length;
+  for (i = 2; i < l; i += 3) {
+    result += base64abc[bytes[i - 2] >> 2];
+    result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
+    result += base64abc[((bytes[i - 1] & 0x0F) << 2) | (bytes[i] >> 6)];
+    result += base64abc[bytes[i] & 0x3F];
+  }
+  if (i === l + 1) { // 1 octet yet to write
+    result += base64abc[bytes[i - 2] >> 2];
+    result += base64abc[(bytes[i - 2] & 0x03) << 4];
+    result += '==';
+  }
+  if (i === l) { // 2 octets yet to write
+    result += base64abc[bytes[i - 2] >> 2];
+    result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
+    result += base64abc[(bytes[i - 1] & 0x0F) << 2];
+    result += '=';
+  }
+  return result;
+}
+
+/// ////////////////////////////////////////////////////////////
 
 const makerPage = (req, res) => res.render('app', {
   csrfToken: req.csrfToken(),
@@ -136,20 +176,28 @@ const downloadNBTFile = (req, res) => {
       }
     }
 
-    // File name are the UUIDs
     try {
+      // Minecraft only parses nbt data that is compressed. Hence, the compression here lol
       const zipped = zlib.gzipSync(new Uint8Array(nbt.writeUncompressed(data)));
-      fs.writeFileSync('nbt_files/testzipped.nbt', zipped); // testing. File is perfect when saved locally.
 
-      // Stream is a more effcient and easier way to send files to client
-      // https://stackoverflow.com/a/45922316
-      const readStream = new stream.PassThrough();
-      readStream.end(zipped);
-      res.setHeader('Content-Length', Buffer.byteLength(zipped));
-      res.setHeader('Content-disposition', `attachment; filename=${req.body.filename}.nbt`);
-      res.setHeader('Content-Type', 'application/octet-stream');
-      readStream.pipe(res);
-      return null;
+      // This encoding is needed to convert our binary data into a base64 string to
+      // send to the client to download as a file. Due to an unknown issue I am having,
+      // express keeps converting my binary data to utf8 strings and losing data in the
+      // process instead of sending straight binary. This base64 encoding bypasses the
+      // issue and client side will decode it back to binary.
+      const stringEncoded = bytesToBase64(zipped);
+
+      // EXPRESS, WHY CANT YOU JUST SEND BINARY DATA AS BINARY DATA LIKE I SPECIFY?!
+      // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      res.set({
+        'Content-Type': 'application/octet-stream',
+        'Content-Length': stringEncoded.length,
+        'Content-Transfer-Encoding': 'binary',
+        'Content-disposition': `filename=${req.body.filename}.nbt`,
+      });
+      res.type('application/octet-stream');
+      res.end(stringEncoded, 'binary'); // cursed
+      return res;
     } catch (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
