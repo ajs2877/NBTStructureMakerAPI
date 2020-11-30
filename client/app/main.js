@@ -96,14 +96,14 @@ const handleResponse = (xhr, parseResponse) => {
 
       // re-add all files as an option so now the list is up to date
       obj.filename.forEach(filename =>{
-        var optionElement = document.createElement("option");
+        let optionElement = document.createElement("option");
         optionElement.value = filename;
         optionElement.text = filename;
         fileElement.appendChild(optionElement);
       });
     }
 
-    // refresh the grid on screen and update internal structureBlocks variable 
+    // refresh the grid on screen and update internal structureBlocks letiable 
     if(obj.task === "load" && obj.nbt && obj.size){
       setupGrid(obj.nbt, obj.size);
       msg = "file loaded successfully!"
@@ -185,7 +185,7 @@ const getAllNBTFiles = (defaultFile) => {
     // re-add all files as an option so now the list is up to date
     let index = 1; // 0 is no file selected
     data.nbts.forEach(entry =>{
-      var optionElement = document.createElement("option");
+      let optionElement = document.createElement("option");
       optionElement.value = entry.filename;
       optionElement.text = entry.filename;
       fileElement.appendChild(optionElement);
@@ -289,7 +289,8 @@ const TopSection = (props) => {
   );
 };
 
-var setup = function(csrf) {
+//Sets up the nav bar and controls for the main page
+let setup = function(csrf) {
   ReactDOM.render(
     <TopSection csrf={csrf}/>, document.querySelector("#topSection")
   );
@@ -302,7 +303,7 @@ var setup = function(csrf) {
   getAllNBTFiles();
 };
 
-var getToken = () => {
+let getToken = () => {
     sendAjax('GET', '/getToken', null, (result) => {
         setup(result.csrfToken);
     });

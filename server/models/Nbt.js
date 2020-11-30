@@ -41,6 +41,7 @@ NbtSchema.statics.toAPI = (doc) => ({
   data: doc.data,
 });
 
+// Return names of all avaliable files for the given user
 NbtSchema.statics.returnAllDataNamesForOwner = (ownerId, callback) => {
   const search = {
     owner: convertId(ownerId),
@@ -49,6 +50,7 @@ NbtSchema.statics.returnAllDataNamesForOwner = (ownerId, callback) => {
   return NbtModel.find(search).select('filename').lean().exec(callback);
 };
 
+// Return file under specified name for the given user
 NbtSchema.statics.returnDataForOwner = (ownerId, nameIn, callback) => {
   const search = {
     owner: convertId(ownerId),
@@ -58,6 +60,7 @@ NbtSchema.statics.returnDataForOwner = (ownerId, nameIn, callback) => {
   return NbtModel.find(search).select('size data').lean().exec(callback);
 };
 
+// Delete file under specified name for the given user
 NbtSchema.statics.deleteFileFromowner = (ownerId, nameIn, callback) => {
   const search = {
     owner: convertId(ownerId),

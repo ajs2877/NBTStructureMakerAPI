@@ -12,7 +12,7 @@ const router = (app) => {
   app.get('/getFileList', mid.requiresLogin, controllers.Nbt.getFileList);
   app.delete('/deleteFile', mid.requiresLogin, controllers.Nbt.deleteNbt);
   app.post('/saveNBT', mid.requiresLogin, controllers.Nbt.saveNBT);
-  app.get('/maker', mid.requiresLogin, controllers.Nbt.makerPage);
+  app.get('/main', mid.requiresLogin, controllers.Nbt.mainPage);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };
 

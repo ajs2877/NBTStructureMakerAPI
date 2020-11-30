@@ -61,10 +61,11 @@ function bytesToBase64(bytes) {
 
 /// ////////////////////////////////////////////////////////////
 
-const makerPage = (req, res) => res.render('app', {
+const mainPage = (req, res) => res.render('app', {
   csrfToken: req.csrfToken(),
 });
 
+// For saving the grid of blocks to mongo db as an array of strings
 const saveNBT = (req, res) => {
   if (!req.body.filename || !req.body.size || !req.body.structureBlocks) {
     return res.status(400).json({
@@ -79,6 +80,7 @@ const saveNBT = (req, res) => {
     owner: req.session.account._id,
   };
 
+  // try and grab the data from db to see if it already exists under the filename specified
   return Nbt.NbtModel.returnDataForOwner(req.session.account._id, nbtData.filename, (err, docs) => {
     if (err) {
       console.log(err);
@@ -101,7 +103,6 @@ const saveNBT = (req, res) => {
     }
 
     // create new entry as file didn't exist
-
     const newNbt = new Nbt.NbtModel(nbtData);
     const nbtPromise = newNbt.save();
 
@@ -122,6 +123,8 @@ const saveNBT = (req, res) => {
   });
 };
 
+// take the block array sent from user, turn it into nbt binary format,
+// and send it back to user for them to download as a file
 const downloadNBTFile = (req, res) => {
   if (!req.body.filename || !req.body.size || !req.body.structureBlocks) {
     return res.status(400).json({
@@ -142,7 +145,8 @@ const downloadNBTFile = (req, res) => {
     formattedData.push(row);
   }
 
-  const rawdata = fs.readFileSync('nbt_files/base_template.nbt'); // We will use this as a template
+  // We will use this as a template for the file format
+  const rawdata = fs.readFileSync('nbt_files/base_template.nbt');
 
   // nbt package needed to read and write from nbt files.
   return nbt.parse(rawdata, (error, dataResult) => {
@@ -205,6 +209,7 @@ const downloadNBTFile = (req, res) => {
   });
 };
 
+// Deletes the data from mongo db. Nothing fancy
 const deleteNbt = (req, res) => Nbt.NbtModel.deleteFileFromowner(
   req.session.account._id,
   req.query.nbt_file,
@@ -217,6 +222,7 @@ const deleteNbt = (req, res) => Nbt.NbtModel.deleteFileFromowner(
   },
 );
 
+// return the data for the specified file back to client
 const getNBTFile = (req, res) => Nbt.NbtModel.returnDataForOwner(
   req.session.account._id,
   req.query.nbt_file,
@@ -239,6 +245,7 @@ const getNBTFile = (req, res) => Nbt.NbtModel.returnDataForOwner(
   },
 );
 
+// return array of names of all avaliable files for the user
 const getFileList = (request, response) => {
   const req = request;
   const res = response;
@@ -263,5 +270,5 @@ module.exports.getFileList = getFileList;
 module.exports.downloadNBTFile = downloadNBTFile;
 module.exports.getNBTFile = getNBTFile;
 module.exports.saveNBT = saveNBT;
-module.exports.makerPage = makerPage;
+module.exports.mainPage = mainPage;
 module.exports.deleteNbt = deleteNbt;

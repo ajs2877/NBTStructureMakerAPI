@@ -1,12 +1,12 @@
-var handleError = (message) => { 
+let handleError = (message) => { 
     $("#errorMessage").text(message); 
 }; 
 
-var redirect = (response) => { 
+let redirect = (response) => { 
     window.location = response.redirect; 
 }; 
 
-var sendAjax = (type, action, data, success) => { 
+let sendAjax = (type, action, data, success) => { 
     $.ajax({ 
         cache: false, 
         type: type, 
