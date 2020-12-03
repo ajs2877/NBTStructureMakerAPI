@@ -87,12 +87,12 @@ const handleResponse = (xhr, parseResponse) => {
 
 
       obj.filename.forEach(filename => {
-        var optionElement = document.createElement("option");
+        let optionElement = document.createElement("option");
         optionElement.value = filename;
         optionElement.text = filename;
         fileElement.appendChild(optionElement);
       });
-    } // refresh the grid on screen and update internal structureBlocks variable 
+    } // refresh the grid on screen and update internal structureBlocks letiable 
 
 
     if (obj.task === "load" && obj.nbt && obj.size) {
@@ -166,9 +166,6 @@ const NBTFileRequest = e => {
 
 const getAllNBTFiles = defaultFile => {
   sendAjax('GET', `/getFileList?_csrf=${document.querySelector("#_csrfhidden").value}`, null, data => {
-    // ReactDOM.render(
-    //     <DomoList domos={data.domos} />, document.querySelector("#domos")
-    // );
     let fileElement = document.querySelector("#files"); // remove all entries except for the 'no file selected' option
 
     while (fileElement.lastChild.value) {
@@ -181,7 +178,7 @@ const getAllNBTFiles = defaultFile => {
     let index = 1; // 0 is no file selected
 
     data.nbts.forEach(entry => {
-      var optionElement = document.createElement("option");
+      let optionElement = document.createElement("option");
       optionElement.value = entry.filename;
       optionElement.text = entry.filename;
       fileElement.appendChild(optionElement); // set selected default
@@ -295,9 +292,10 @@ const TopSection = props => {
     value: "deleteFile",
     "data-request-type": "DELETE"
   }, "Delete selected NBT File"));
-};
+}; //Sets up the nav bar and controls for the main page
 
-var setup = function (csrf) {
+
+let setup = function (csrf) {
   ReactDOM.render( /*#__PURE__*/React.createElement(TopSection, {
     csrf: csrf
   }), document.querySelector("#topSection"));
@@ -310,7 +308,7 @@ var setup = function (csrf) {
   getAllNBTFiles();
 };
 
-var getToken = () => {
+let getToken = () => {
   sendAjax('GET', '/getToken', null, result => {
     setup(result.csrfToken);
   });
@@ -433,15 +431,16 @@ const setupGrid = (structureData, structureSize) => {
 
   ;
 };
-var handleError = message => {
+let handleError = message => {
   $("#errorMessage").text(message);
+  alert(message);
 };
 
-var redirect = response => {
+let redirect = response => {
   window.location = response.redirect;
 };
 
-var sendAjax = (type, action, data, success) => {
+let sendAjax = (type, action, data, success) => {
   $.ajax({
     cache: false,
     type: type,
